@@ -1,0 +1,40 @@
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\bin\Debug\net7.0\AnimateTheConsole.exe
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\bin\Debug\net7.0\AnimateTheConsole.deps.json
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\bin\Debug\net7.0\AnimateTheConsole.runtimeconfig.json
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\bin\Debug\net7.0\AnimateTheConsole.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\bin\Debug\net7.0\AnimateTheConsole.pdb
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.AssemblyInfoInputs.cache
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.AssemblyInfo.cs
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.csproj.CoreCompileInputs.cache
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\refint\AnimateTheConsole.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.pdb
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.genruntimeconfig.cache
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\ref\AnimateTheConsole.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\bin\Debug\net7.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\bin\Debug\net7.0\System.Drawing.Common.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\bin\Debug\net7.0\runtimes\win\lib\net7.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.csproj.AssemblyReference.cache
+C:\Users\Student\workspace\rilee-horowitz-side-projects\Animate The Console\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.csproj.CopyComplete
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\bin\Debug\net7.0\AnimateTheConsole.exe
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\bin\Debug\net7.0\AnimateTheConsole.deps.json
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\bin\Debug\net7.0\AnimateTheConsole.runtimeconfig.json
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\bin\Debug\net7.0\AnimateTheConsole.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\bin\Debug\net7.0\AnimateTheConsole.pdb
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\bin\Debug\net7.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\bin\Debug\net7.0\System.Drawing.Common.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\bin\Debug\net7.0\runtimes\win\lib\net7.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.csproj.AssemblyReference.cache
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.AssemblyInfoInputs.cache
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.AssemblyInfo.cs
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.csproj.CoreCompileInputs.cache
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.csproj.CopyComplete
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\refint\AnimateTheConsole.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.pdb
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\AnimateTheConsole.genruntimeconfig.cache
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\obj\Debug\net7.0\ref\AnimateTheConsole.dll

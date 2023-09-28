@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "xCmqKWqrEOZS3ryiIrZqDR9VoxhzqUIxhDfnnlPsWoC6Qk//Aikk21fL/gnrwgjGWVl1PD0PttSLvdgI4ebsgw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Student\\workspace\\rilee-horowitz-side-projects\\AnimateTheConsole\\AnimateTheConsole.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Student\\.nuget\\packages\\microsoft.win32.systemevents\\7.0.0\\microsoft.win32.systemevents.7.0.0.nupkg.sha512",
+    "C:\\Users\\Student\\.nuget\\packages\\system.drawing.common\\7.0.0\\system.drawing.common.7.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
