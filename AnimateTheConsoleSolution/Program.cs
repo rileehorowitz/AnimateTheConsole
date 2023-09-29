@@ -22,25 +22,25 @@ namespace AnimateTheConsole
         private static void Main(string[] args)
         {
             GetFunChars();
+            Console.CursorSize = 1;
             //SetTerminalWindowSize();
             //Console.SetWindowSize()
             windowWidth = Console.WindowWidth;
             windowHeight = Console.WindowHeight;
 
+            string name = "SixOfCrows";
             string solutionFolderPath = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).ToString()).ToString()).ToString();
-            string imagesFolderPath = solutionFolderPath + @"\images\SixOfCrows_";
-            string outputFolderPath = solutionFolderPath + @"\image-to-ascii-output\SixOfCrowsFrames";
-            string asciiFolderPath = solutionFolderPath + @"\image-to-ascii-output\SixOfCrowsFrames";
+            string imagesFolderPath = solutionFolderPath + @"\images\" + name;
+            string outputFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
+            string asciiFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
 
-            Console.WriteLine("The current directory is {0}", solutionFolderPath);
-            Console.ReadKey(true);
+            BrightnessSettings sixCrowSettings = MakeBrightnessSetting(.10F, .21F, .32F, .43F);
+            BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .20F, .45F, .85F);
 
-            BrightnessSettings sixCrowSettings = MakeBrightnessSetting(.10F, .25F, .45F, .85F);
-            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, sixCrowSettings);
-
+            ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings);
             ReadAsciiFromFolder(asciiFolderPath);
 
-            //WriteScreenBarriers();
+            
             //RunBlockThroughScreen();
 
             Console.ReadKey(true);
@@ -55,21 +55,16 @@ namespace AnimateTheConsole
             {
                 using (StreamReader sr = new StreamReader(filePath))
                 {
-                    string frameText = sr.ReadToEnd();
-                    string[] frameLines = frameText.Split(splitString);
-                    for(int i = 0; i < windowHeight; i++)
-                    {
-                        Console.SetCursorPosition((windowWidth/4), i);
-                        Console.Write($"{frameLines[i]}");
-                        if(i < windowHeight- 1)
-                        {
-                            Console.WriteLine();
-                        }
-                    }
-                    Thread.Sleep(50);
-                    Console.Clear();
-                    Console.SetCursorPosition(0, 0);
+                    frames.Add(sr.ReadToEnd().Replace(splitString,"\n"));
                 }
+            }
+            foreach(string frame in frames)
+            {
+                Console.Write(frame);
+                WriteScreenBarriers();
+                Thread.Sleep(50);
+                Console.Clear();
+                Console.SetCursorPosition(0, 0);
             }
         }
         struct BrightnessSettings
@@ -88,19 +83,25 @@ namespace AnimateTheConsole
             bs.DarkThreshold = dark;
             return bs;
         }
-        private static void ConvertImagesToAscii(string imagesFolderPath, string outputFolderPath, BrightnessSettings bs)
+        private static void ConvertImagesToAscii(string imagesFolderPath, string outputFolderPath, string name, BrightnessSettings bs)
         {
             int count = 0;
             string displayZeroes = "00";
             List<string> imageFileArray = new List<string>();
-            for (int i = 1; i <= 4; i++)
+            string [] foldersInImagePath = Directory.GetDirectories(imagesFolderPath);
+            if (!Directory.Exists(outputFolderPath))
             {
-                imageFileArray.AddRange(Directory.GetFiles($"{imagesFolderPath}{i}", "*.jpg"));
+                Directory.CreateDirectory(outputFolderPath);
+            }
+
+            for (int i = 1; i <= foldersInImagePath.Length; i++)
+            {
+                imageFileArray.AddRange(Directory.GetFiles($"{foldersInImagePath[i-1]}", "*.jpg"));
             }
             foreach (string imageFile in imageFileArray)
             {
                 string imageText = ConvertImageToAscii(imageFile, bs);
-                string outputFilePath = Path.Combine(outputFolderPath, $"SixOfCrowsFrame{displayZeroes}{count}.txt");
+                string outputFilePath = Path.Combine(outputFolderPath, $"{name}{displayZeroes}{count}.txt");
                 using (StreamWriter sw = new StreamWriter(outputFilePath))
                 {
                     sw.Write(imageText);
@@ -124,11 +125,11 @@ namespace AnimateTheConsole
         {
             string imageText = "";
             Image image = Image.FromFile(imageFile);
-            Bitmap bm = new Bitmap(image, windowWidth / 2, windowHeight);
+            Bitmap bm = new Bitmap(image, windowWidth, windowHeight);
             for (int y = 0; y < windowHeight; y++)
             {
                 if (y > 0) { imageText += splitString; }
-                for (int x = 0; x < windowWidth / 2; x++)
+                for (int x = 0; x < windowWidth; x++)
                 {
                     Color thisPixel = bm.GetPixel(x, y);
                     float brightness = thisPixel.GetBrightness();
@@ -138,19 +139,23 @@ namespace AnimateTheConsole
                     }
                     else if (brightness <= bs.LightThreshold)
                     {
-                        imageText += extraChars["LIGHTSHADE"];
+                        //imageText += extraChars["LIGHTSHADE"];
+                        imageText += ".";
                     }
                     else if (brightness <= bs.MediumThreshold)
                     {
-                        imageText += extraChars["MEDIUMSHADE"];
+                        //imageText += extraChars["MEDIUMSHADE"];
+                        imageText += ":";
                     }
-                    else if (brightness <= bs.MediumThreshold)
+                    else if (brightness <= bs.DarkThreshold)
                     {
-                        imageText += extraChars["DARKSHADE"];
+                        //imageText += extraChars["DARKSHADE"];
+                        imageText += "+";
                     }
                     else
                     {
-                        imageText += extraChars["FULLBLOCK"];
+                        //imageText += extraChars["FULLBLOCK"];
+                        imageText += "8";
                     }
                 } 
             }
