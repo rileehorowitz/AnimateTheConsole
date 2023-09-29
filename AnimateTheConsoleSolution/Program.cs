@@ -15,32 +15,41 @@ namespace AnimateTheConsole
         private static int windowHeight;
         private static string splitString = "|";
 
-        private static Dictionary<string, string> extraChars = new Dictionary<string, string>() 
-        { 
-        
+        private static Dictionary<string, string> extraChars = new Dictionary<string, string>()
+        {
+
         };
         private static void Main(string[] args)
         {
             GetFunChars();
             Console.CursorSize = 1;
-            //SetTerminalWindowSize();
+            SetTerminalFullScreen();
+            Thread.Sleep(10);
             //Console.SetWindowSize()
             windowWidth = Console.WindowWidth;
             windowHeight = Console.WindowHeight;
 
-            string name = "SixOfCrows";
+            string name = "Hades";
             string solutionFolderPath = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).ToString()).ToString()).ToString();
             string imagesFolderPath = solutionFolderPath + @"\images\" + name;
             string outputFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
             string asciiFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
 
             BrightnessSettings sixCrowSettings = MakeBrightnessSetting(.10F, .21F, .32F, .43F);
-            BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .20F, .45F, .85F);
+            BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .20F, .50F, .85F);
 
-            ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings);
+            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, hadesSettings);
+
+            Console.Write("Shading Example : Hades Animation");
+            Console.ReadKey(true);
+            ReadAsciiFromFolder(asciiFolderPath);
+            Console.Write("Anti Aliasing Example : Six Of Crows Animation");
+            Console.ReadKey(true);
+            name = "SixOfCrows";
+            asciiFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
             ReadAsciiFromFolder(asciiFolderPath);
 
-            
+
             //RunBlockThroughScreen();
 
             Console.ReadKey(true);
@@ -51,22 +60,23 @@ namespace AnimateTheConsole
             List<string> frames = new List<string>();
             asciiFileList.AddRange(Directory.GetFiles(asciiFolderPath, "*.txt"));
 
-            foreach(string filePath in asciiFileList)
+            foreach (string filePath in asciiFileList)
             {
                 using (StreamReader sr = new StreamReader(filePath))
                 {
-                    frames.Add(sr.ReadToEnd().Replace(splitString,"\n"));
+                    frames.Add(sr.ReadToEnd().Replace(splitString, "\n"));
                 }
             }
-            foreach(string frame in frames)
+            foreach (string frame in frames)
             {
                 Console.Write(frame);
-                WriteScreenBarriers();
+                //WriteScreenBarriers();
                 Thread.Sleep(50);
                 Console.Clear();
                 Console.SetCursorPosition(0, 0);
             }
         }
+
         struct BrightnessSettings
         {
             public float BlankThreshold;
@@ -86,31 +96,41 @@ namespace AnimateTheConsole
         private static void ConvertImagesToAscii(string imagesFolderPath, string outputFolderPath, string name, BrightnessSettings bs)
         {
             int count = 0;
-            string displayZeroes = "00";
+            string displayZeroes = "";
             List<string> imageFileArray = new List<string>();
-            string [] foldersInImagePath = Directory.GetDirectories(imagesFolderPath);
+            string[] foldersInImagePath = Directory.GetDirectories(imagesFolderPath);
             if (!Directory.Exists(outputFolderPath))
             {
                 Directory.CreateDirectory(outputFolderPath);
             }
 
-            for (int i = 1; i <= foldersInImagePath.Length; i++)
+            for (int i = 0; i < foldersInImagePath.Length; i++)
             {
-                imageFileArray.AddRange(Directory.GetFiles($"{foldersInImagePath[i-1]}", "*.jpg"));
+                imageFileArray.AddRange(Directory.GetFiles($"{foldersInImagePath[i]}", "*.jpg"));
+            }
+            //find the decimal place of frames we're working with and modify displayZeroes accordingly
+            string fileCount = imageFileArray.Count.ToString();
+            for (int i = 0; i < fileCount.Length - 1; i++)
+            {
+                displayZeroes += "0";
             }
             foreach (string imageFile in imageFileArray)
             {
-                string imageText = ConvertImageToAscii(imageFile, bs);
+                //string imageText = ConvertImageToAsciiAntiAliasing(imageFile, bs);
+                string imageText = ConvertImageToAsciiShading(imageFile, bs);
+
                 string outputFilePath = Path.Combine(outputFolderPath, $"{name}{displayZeroes}{count}.txt");
                 using (StreamWriter sw = new StreamWriter(outputFilePath))
                 {
                     sw.Write(imageText);
                 }
+
                 count++;
-                if(count < 10)
+                if (count < 10)
                 {
                     displayZeroes = "00";
-                }else if(count < 100)
+                }
+                else if (count < 100)
                 {
                     displayZeroes = "0";
                 }
@@ -118,10 +138,11 @@ namespace AnimateTheConsole
                 {
                     displayZeroes = "";
                 }
-                Console.Write(imageText);
+
+                Console.WriteLine($"{displayZeroes}{count} / {fileCount}");
             }
         }
-        private static string ConvertImageToAscii(string imageFile, BrightnessSettings bs)
+        private static string ConvertImageToAsciiShading(string imageFile, BrightnessSettings bs)
         {
             string imageText = "";
             Image image = Image.FromFile(imageFile);
@@ -157,10 +178,128 @@ namespace AnimateTheConsole
                         //imageText += extraChars["FULLBLOCK"];
                         imageText += "8";
                     }
-                } 
+                }
             }
             return imageText;
         }
+        private static string ConvertImageToAsciiAntiAliasing(string imageFile, BrightnessSettings bs)
+        {
+            string imageText = "";
+            Image image = Image.FromFile(imageFile);
+            Bitmap bm = new Bitmap(image);
+
+            //height and width in pixels of a givenpixel grid
+            int pixelGridWidth = bm.Width / windowWidth;
+            int pixelGridHeight = bm.Height / windowHeight;
+            //number of pixels in each quadrant
+            int pixelQuadrantCount = pixelGridWidth * pixelGridHeight / 4;
+
+            float topLeftQuadrant = 0F;
+            float topRightQuadrant = 0F;
+            float bottomLeftQuadrant = 0F;
+            float bottomRightQuadrant = 0F;
+
+            //Inside the entire image
+            for (int y = 0; y < bm.Height - pixelGridHeight; y += pixelGridHeight)
+            {
+                float threshold = bs.LightThreshold;
+                if (y > 0) { imageText += splitString; }
+                for (int x = 0; x < bm.Width - pixelGridWidth; x += pixelGridWidth)
+                {
+                    //Inside a single pixelGrid
+                    for (int i = 0; i < pixelGridWidth; i++)
+                    {
+                        for (int j = 0; j < pixelGridHeight; j++)
+                        {
+                            Color thisPixel = bm.GetPixel(x + i, y + j);
+                            if (i <= pixelGridWidth / 2 && j <= pixelGridHeight / 2)
+                            {
+                                //top left
+                                topLeftQuadrant += thisPixel.GetBrightness();
+                            }
+                            if (i > pixelGridWidth / 2 && j <= pixelGridHeight / 2)
+                            {
+                                //top right
+                                topRightQuadrant += thisPixel.GetBrightness();
+                            }
+                            if (i > pixelGridWidth / 2 && j > pixelGridHeight / 2)
+                            {
+                                //bottom right
+                                bottomRightQuadrant += thisPixel.GetBrightness();
+                            }
+                            if (i <= pixelGridWidth / 2 && j > pixelGridHeight / 2)
+                            {
+                                //bottom left
+                                bottomLeftQuadrant += thisPixel.GetBrightness();
+                            }
+                        }
+                    }
+                    //average brightness of each quadrant
+                    topLeftQuadrant /= pixelQuadrantCount;
+                    topRightQuadrant /= pixelQuadrantCount;
+                    bottomLeftQuadrant /= pixelQuadrantCount;
+                    bottomRightQuadrant /= pixelQuadrantCount;
+
+                    //average brightness of entire grid
+                    float gridAverageBrightness = (topLeftQuadrant + topRightQuadrant + bottomLeftQuadrant + bottomRightQuadrant) / 4.0F;
+
+
+                    if (topLeftQuadrant < threshold && topRightQuadrant < threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
+                    {
+                        imageText += " ";
+                    }
+                    else if (topLeftQuadrant >= threshold && topRightQuadrant < threshold && bottomLeftQuadrant >= threshold && bottomRightQuadrant >= threshold)
+                    {
+                        imageText += "*";
+                    }
+                    else if (topLeftQuadrant >= threshold && topRightQuadrant < threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
+                    {
+                        imageText += "`";
+                    }
+                    else if (topLeftQuadrant < threshold && topRightQuadrant >= threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
+                    {
+                        imageText += "'";
+                    }
+                    else if (topLeftQuadrant >= threshold && topRightQuadrant >= threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
+                    {
+                        imageText += "b";
+                    }
+                    else if (topLeftQuadrant < threshold && topRightQuadrant < threshold && bottomLeftQuadrant >= threshold && bottomRightQuadrant < threshold)
+                    {
+                        imageText += ",";
+                    }
+                    else if (topLeftQuadrant < threshold && topRightQuadrant < threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant >= threshold)
+                    {
+                        imageText += ".";
+                    }
+                    else if (topLeftQuadrant < threshold && topRightQuadrant >= threshold && bottomLeftQuadrant >= threshold && bottomRightQuadrant >= threshold)
+                    {
+                        imageText += "d";
+                    }
+                    else if (topLeftQuadrant >= threshold && topRightQuadrant >= threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
+                    {
+                        imageText += "b";
+                    }
+                    else if (topLeftQuadrant >= threshold && topRightQuadrant >= threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant >= threshold)
+                    {
+                        imageText += "Y";
+                    }
+                    else if (topLeftQuadrant >= threshold && topRightQuadrant >= threshold && bottomLeftQuadrant >= threshold && bottomRightQuadrant < threshold)
+                    {
+                        imageText += "P";
+                    }
+                    else
+                    {
+                        imageText += "8";
+                    }
+
+                }
+            }
+            return imageText;
+        }
+
+
+
         private static void RunBlockThroughScreen()
         {
             for (int y = 1; y < windowHeight - 1; y++)
@@ -192,17 +331,17 @@ namespace AnimateTheConsole
                         Console.SetCursorPosition(x, y);
                         Console.Write(extraChars["BOXTOPLEFT"]);
                     }
-                    else if(y == 0 && x == windowWidth - 1)
+                    else if (y == 0 && x == windowWidth - 1)
                     {
                         Console.SetCursorPosition(x, y);
                         Console.Write(extraChars["BOXTOPRIGHT"]);
                     }
-                    else if(y == windowHeight-1  && x == 0)
+                    else if (y == windowHeight - 1 && x == 0)
                     {
                         Console.SetCursorPosition(x, y);
                         Console.Write(extraChars["BOXBOTTOMLEFT"]);
                     }
-                    else if(y == windowHeight-1  && x == windowWidth - 1)
+                    else if (y == windowHeight - 1 && x == windowWidth - 1)
                     {
                         Console.SetCursorPosition(x, y);
                         Console.Write(extraChars["BOXBOTTOMRIGHT"]);
@@ -233,7 +372,7 @@ namespace AnimateTheConsole
             extraChars["LIGHTSHADE"] = "E29691";
             extraChars["MEDIUMSHADE"] = "E29692";
             extraChars["DARKSHADE"] = "E29693";
-            foreach (KeyValuePair<string,string> character in extraChars)
+            foreach (KeyValuePair<string, string> character in extraChars)
             {
                 byte[] byteArray = ConvertHexStringToByteArray(character.Value);
                 extraChars[character.Key] = encode.GetString(byteArray);
@@ -248,7 +387,7 @@ namespace AnimateTheConsole
             public int Bottom;
         }
         //Method to set the terminal window to full screen
-        private static void SetTerminalWindowSize()
+        private static void SetTerminalFullScreen()
         {
             // Import the necessary functions from user32.dll
             [DllImport("user32.dll")]
@@ -259,7 +398,7 @@ namespace AnimateTheConsole
             static extern bool GetWindowRect(IntPtr windowHandle, out WindowDimensions dimensions);
             [DllImport("user32.dll")]
             static extern bool MoveWindow(IntPtr windowHandle, int left, int top, int newWidth, int newHeight, bool Repaint);
-            
+
             // Constants for the ShowWindow function
             const int SW_MAXIMIZE = 3;
             // Get the handle of the console window
@@ -281,7 +420,7 @@ namespace AnimateTheConsole
             // Make sure hexString is an even length
             if (hexString.Length % 2 != 0)
             {
-                throw new ArgumentException( $"The binary key cannot have an odd number of digits: {hexString}");
+                throw new ArgumentException($"The binary key cannot have an odd number of digits: {hexString}");
             }
             // Every two characters in hexString must be converted into a byte and added to the byte array
             byte[] data = new byte[hexString.Length / 2];

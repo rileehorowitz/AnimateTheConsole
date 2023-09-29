@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\envoy\\workspace\\AnimateTheConsole\\AnimateTheConsoleSolution\\AnimateTheConsole.csproj": {}
+    "C:\\Users\\Student\\workspace\\rilee-horowitz-side-projects\\AnimateTheConsole\\AnimateTheConsoleSolution\\AnimateTheConsole.csproj": {}
   },
   "projects": {
-    "C:\\Users\\envoy\\workspace\\AnimateTheConsole\\AnimateTheConsoleSolution\\AnimateTheConsole.csproj": {
+    "C:\\Users\\Student\\workspace\\rilee-horowitz-side-projects\\AnimateTheConsole\\AnimateTheConsoleSolution\\AnimateTheConsole.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\envoy\\workspace\\AnimateTheConsole\\AnimateTheConsoleSolution\\AnimateTheConsole.csproj",
+        "projectUniqueName": "C:\\Users\\Student\\workspace\\rilee-horowitz-side-projects\\AnimateTheConsole\\AnimateTheConsoleSolution\\AnimateTheConsole.csproj",
         "projectName": "AnimateTheConsole",
-        "projectPath": "C:\\Users\\envoy\\workspace\\AnimateTheConsole\\AnimateTheConsoleSolution\\AnimateTheConsole.csproj",
-        "packagesPath": "C:\\Users\\envoy\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\envoy\\workspace\\AnimateTheConsole\\AnimateTheConsoleSolution\\obj\\",
+        "projectPath": "C:\\Users\\Student\\workspace\\rilee-horowitz-side-projects\\AnimateTheConsole\\AnimateTheConsoleSolution\\AnimateTheConsole.csproj",
+        "packagesPath": "C:\\Users\\Student\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Student\\workspace\\rilee-horowitz-side-projects\\AnimateTheConsole\\AnimateTheConsoleSolution\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\envoy\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Student\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -61,7 +61,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }
