@@ -19,11 +19,10 @@ namespace AnimateTheConsole
         { 
         
         };
-       
         private static void Main(string[] args)
         {
             GetFunChars();
-            SetTerminalWindowSize();
+            //SetTerminalWindowSize();
             //Console.SetWindowSize()
             windowWidth = Console.WindowWidth;
             windowHeight = Console.WindowHeight;
@@ -46,7 +45,6 @@ namespace AnimateTheConsole
 
             Console.ReadKey(true);
         }
-
         private static void ReadAsciiFromFolder(string asciiFolderPath)
         {
             List<string> asciiFileList = new List<string>();
@@ -59,11 +57,11 @@ namespace AnimateTheConsole
                 {
                     string frameText = sr.ReadToEnd();
                     string[] frameLines = frameText.Split(splitString);
-                    for(int i = 0; i < frameLines.Length; i++)
+                    for(int i = 0; i < windowHeight; i++)
                     {
                         Console.SetCursorPosition((windowWidth/4), i);
                         Console.Write($"{frameLines[i]}");
-                        if(i < frameLines.Length - 1)
+                        if(i < windowHeight- 1)
                         {
                             Console.WriteLine();
                         }
@@ -74,7 +72,6 @@ namespace AnimateTheConsole
                 }
             }
         }
-
         struct BrightnessSettings
         {
             public float BlankThreshold;
@@ -93,7 +90,6 @@ namespace AnimateTheConsole
         }
         private static void ConvertImagesToAscii(string imagesFolderPath, string outputFolderPath, BrightnessSettings bs)
         {
-            
             int count = 0;
             string displayZeroes = "00";
             List<string> imageFileArray = new List<string>();
@@ -124,7 +120,6 @@ namespace AnimateTheConsole
                 Console.Write(imageText);
             }
         }
-
         private static string ConvertImageToAscii(string imageFile, BrightnessSettings bs)
         {
             string imageText = "";
@@ -161,7 +156,6 @@ namespace AnimateTheConsole
             }
             return imageText;
         }
-
         private static void RunBlockThroughScreen()
         {
             for (int y = 1; y < windowHeight - 1; y++)
@@ -182,7 +176,6 @@ namespace AnimateTheConsole
                 }
             }
         }
-
         private static void WriteScreenBarriers()
         {
             for (int y = 0; y < windowHeight; y++)
@@ -222,7 +215,6 @@ namespace AnimateTheConsole
                 }
             }
         }
-
         private static void GetFunChars()
         {
             Encoding encode = Encoding.UTF8;
@@ -236,14 +228,12 @@ namespace AnimateTheConsole
             extraChars["LIGHTSHADE"] = "E29691";
             extraChars["MEDIUMSHADE"] = "E29692";
             extraChars["DARKSHADE"] = "E29693";
-
             foreach (KeyValuePair<string,string> character in extraChars)
             {
                 byte[] byteArray = ConvertHexStringToByteArray(character.Value);
                 extraChars[character.Key] = encode.GetString(byteArray);
             }
         }
-
         // Structure used by GetWindowRect
         struct WindowDimensions
         {
@@ -252,7 +242,6 @@ namespace AnimateTheConsole
             public int Right;
             public int Bottom;
         }
-
         //Method to set the terminal window to full screen
         private static void SetTerminalWindowSize()
         {
@@ -281,7 +270,6 @@ namespace AnimateTheConsole
             //Sets the window to the left and top of the screen, then sets the new width and height to what was just calculated, and then says yes, recreate the window to match this information
             MoveWindow(consoleWindowHandle, screenRect.Left, screenRect.Top, width, height, true);
         }
-
         //Method to convert the UTF-8 hex codes into byte arrays that can be converted into our fun characters
         public static byte[] ConvertHexStringToByteArray(string hexString)
         {
@@ -290,7 +278,6 @@ namespace AnimateTheConsole
             {
                 throw new ArgumentException( $"The binary key cannot have an odd number of digits: {hexString}");
             }
-
             // Every two characters in hexString must be converted into a byte and added to the byte array
             byte[] data = new byte[hexString.Length / 2];
             for (int index = 0; index < data.Length; index++)
@@ -298,7 +285,6 @@ namespace AnimateTheConsole
                 string byteValue = hexString.Substring(index * 2, 2);
                 data[index] = byte.Parse(byteValue, NumberStyles.HexNumber);
             }
-
             return data;
         }
     }
