@@ -78,3 +78,5 @@ C:\Users\envoy\workspace\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\n
 C:\Users\envoy\workspace\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\net7.0\AnimateTheConsole.pdb
 C:\Users\envoy\workspace\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\net7.0\AnimateTheConsole.genruntimeconfig.cache
 C:\Users\envoy\workspace\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\net7.0\ref\AnimateTheConsole.dll
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\net7.0\AnimateTheConsole.Properties.Resources.resources
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\net7.0\AnimateTheConsole.csproj.GenerateResource.cache

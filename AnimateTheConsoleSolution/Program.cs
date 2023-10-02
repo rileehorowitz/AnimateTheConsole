@@ -23,36 +23,35 @@ namespace AnimateTheConsole
         {
             GetFunChars();
             Console.CursorSize = 1;
-            SetTerminalFullScreen();
+            //SetTerminalFullScreen();
             Thread.Sleep(10);
-            //Console.SetWindowSize()
             windowWidth = Console.WindowWidth;
             windowHeight = Console.WindowHeight;
 
-            string name = "Hades";
+            string name = "SixOfCrows";
             string solutionFolderPath = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).ToString()).ToString()).ToString();
             string imagesFolderPath = solutionFolderPath + @"\images\" + name;
             string outputFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
             string asciiFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
 
             BrightnessSettings sixCrowSettings = MakeBrightnessSetting(.10F, .21F, .32F, .43F);
-            BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .20F, .50F, .85F);
+            BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .25F, .50F, .85F);
 
-            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, hadesSettings);
+            ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings);
 
             Console.Write("Shading Example : Hades Animation");
             Console.ReadKey(true);
-            ReadAsciiFromFolder(asciiFolderPath);
-            Console.Write("Anti Aliasing Example : Six Of Crows Animation");
-            Console.ReadKey(true);
-            name = "SixOfCrows";
+            Console.Clear();
+            name = "Hades";
             asciiFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
             ReadAsciiFromFolder(asciiFolderPath);
 
-
-            //RunBlockThroughScreen();
-
+            Console.Write("Anti Aliasing Example : Six Of Crows Animation");
             Console.ReadKey(true);
+            Console.Clear();
+            name = "SixOfCrows";
+            asciiFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
+            ReadAsciiFromFolder(asciiFolderPath);
         }
         private static void ReadAsciiFromFolder(string asciiFolderPath)
         {
@@ -116,8 +115,8 @@ namespace AnimateTheConsole
             }
             foreach (string imageFile in imageFileArray)
             {
-                //string imageText = ConvertImageToAsciiAntiAliasing(imageFile, bs);
-                string imageText = ConvertImageToAsciiShading(imageFile, bs);
+                string imageText = ConvertImageToAsciiAntiAliasing(imageFile, bs);
+                //string imageText = ConvertImageToAsciiShading(imageFile, bs);
 
                 string outputFilePath = Path.Combine(outputFolderPath, $"{name}{displayZeroes}{count}.txt");
                 using (StreamWriter sw = new StreamWriter(outputFilePath))
@@ -188,52 +187,80 @@ namespace AnimateTheConsole
             Image image = Image.FromFile(imageFile);
             Bitmap bm = new Bitmap(image);
 
-            //height and width in pixels of a givenpixel grid
+            //base height and width in pixels of a given pixel grid
             int pixelGridWidth = bm.Width / windowWidth;
             int pixelGridHeight = bm.Height / windowHeight;
-            //number of pixels in each quadrant
-            int pixelQuadrantCount = pixelGridWidth * pixelGridHeight / 4;
+
+            //Account for remaining pixels that would otherwise be cut off, used to determine current width and height.
+            float pixelWidthRemainder = (bm.Width % windowWidth) / (float)windowWidth;
+            float pixelHeightRemainder = (bm.Height % windowHeight) / (float)windowHeight;
+
+            float remainderWidthCheck = 0.0F;
+            float remainderHeightCheck = 0.0F;
 
             float topLeftQuadrant = 0F;
             float topRightQuadrant = 0F;
             float bottomLeftQuadrant = 0F;
             float bottomRightQuadrant = 0F;
 
+            float threshold = bs.LightThreshold;
+
+            int currentGridWidth = pixelGridWidth;
+            int currentGridHeight = pixelGridHeight;
+
             //Inside the entire image
-            for (int y = 0; y < bm.Height - pixelGridHeight; y += pixelGridHeight)
+            for (int y = 0; y < bm.Height; y += currentGridHeight)
             {
-                float threshold = bs.LightThreshold;
+                remainderHeightCheck += pixelHeightRemainder;
+                currentGridHeight = pixelGridHeight + (int)remainderHeightCheck;
+
                 if (y > 0) { imageText += splitString; }
-                for (int x = 0; x < bm.Width - pixelGridWidth; x += pixelGridWidth)
+
+                for (int x = 0; x < bm.Width; x += currentGridWidth)
                 {
+                    remainderWidthCheck += pixelWidthRemainder;
+                    currentGridWidth = pixelGridWidth + (int)remainderWidthCheck;
+
+                    //number of pixels in this quadrant
+                    int pixelQuadrantCount = currentGridWidth * currentGridHeight / 4;
+
                     //Inside a single pixelGrid
-                    for (int i = 0; i < pixelGridWidth; i++)
+                    for (int i = 0; i < currentGridWidth; i++)
                     {
-                        for (int j = 0; j < pixelGridHeight; j++)
+                        for (int j = 0; j < currentGridHeight; j++)
                         {
                             Color thisPixel = bm.GetPixel(x + i, y + j);
-                            if (i <= pixelGridWidth / 2 && j <= pixelGridHeight / 2)
+                            if (i <= currentGridWidth / 2 && j <= currentGridHeight / 2)
                             {
                                 //top left
                                 topLeftQuadrant += thisPixel.GetBrightness();
                             }
-                            if (i > pixelGridWidth / 2 && j <= pixelGridHeight / 2)
+                            if (i > currentGridWidth / 2 && j <= currentGridHeight / 2)
                             {
                                 //top right
                                 topRightQuadrant += thisPixel.GetBrightness();
                             }
-                            if (i > pixelGridWidth / 2 && j > pixelGridHeight / 2)
+                            if (i > currentGridWidth / 2 && j > currentGridHeight / 2)
                             {
                                 //bottom right
                                 bottomRightQuadrant += thisPixel.GetBrightness();
                             }
-                            if (i <= pixelGridWidth / 2 && j > pixelGridHeight / 2)
+                            if (i <= currentGridWidth / 2 && j > currentGridHeight / 2)
                             {
                                 //bottom left
                                 bottomLeftQuadrant += thisPixel.GetBrightness();
                             }
                         }
                     }
+                    if(remainderWidthCheck > 1.0F)
+                    {
+                        remainderWidthCheck -= 1.0f;
+                    }
+                    if (remainderHeightCheck > 1.0F)
+                    {
+                        remainderHeightCheck -= 1.0f;
+                    }
+
                     //average brightness of each quadrant
                     topLeftQuadrant /= pixelQuadrantCount;
                     topRightQuadrant /= pixelQuadrantCount;
@@ -250,7 +277,7 @@ namespace AnimateTheConsole
                     }
                     else if (topLeftQuadrant >= threshold && topRightQuadrant < threshold && bottomLeftQuadrant >= threshold && bottomRightQuadrant >= threshold)
                     {
-                        imageText += "*";
+                        imageText += 'b';
                     }
                     else if (topLeftQuadrant >= threshold && topRightQuadrant < threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
                     {
@@ -262,7 +289,7 @@ namespace AnimateTheConsole
                     }
                     else if (topLeftQuadrant >= threshold && topRightQuadrant >= threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
                     {
-                        imageText += "b";
+                        imageText += '"';
                     }
                     else if (topLeftQuadrant < threshold && topRightQuadrant < threshold && bottomLeftQuadrant >= threshold && bottomRightQuadrant < threshold)
                     {
@@ -276,10 +303,6 @@ namespace AnimateTheConsole
                     {
                         imageText += "d";
                     }
-                    else if (topLeftQuadrant >= threshold && topRightQuadrant >= threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
-                    {
-                        imageText += "b";
-                    }
                     else if (topLeftQuadrant >= threshold && topRightQuadrant >= threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant >= threshold)
                     {
                         imageText += "Y";
@@ -292,7 +315,6 @@ namespace AnimateTheConsole
                     {
                         imageText += "8";
                     }
-
                 }
             }
             return imageText;
