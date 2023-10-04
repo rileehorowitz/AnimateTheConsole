@@ -11,9 +11,107 @@ namespace AnimateTheConsole
 {
     public class Program
     {
+        /*
+        ,s888s.
+      ,d888H8888b.
+     d888$8888@88b
+    (HH88HH@HSH$HH)
+    88@8888H8888888
+    `Y88$88000H88P'
+      `*Y888@8P*'
+         `***'
+        ,oOOOo.
+      ,dOOOO/OOb.
+     dOO\IOOO\OOOb
+    {O\OIOIOIOOIIO}
+    OOOO/OOOI/OOOOO
+    `+OOI/OOOO\OO+'
+      `"+OOOOO+"'
+         `"""'
+        ,+!!!+.
+      ,<!!!!!!!>.
+     <!!!!!!!!!!!>
+    [!!!!!!!!!!!!!]
+    !!!!!!!!!!!!!!!
+    `<!!!!!!!!!!!>'
+      `"<!!!!!>"'
+         `"""'
+        ,:::::.
+      ,;::::::::.
+     ;::::::::::::
+    !:::::::::::::!
+    :::::::::::::::
+    `::::::::::::;'
+      `'::::::;''
+         `"""'
+   */
         private static int windowWidth;
         private static int windowHeight;
         private static string splitString = "|";
+        private static Dictionary<string, string> FullValues = new Dictionary<string, string>()
+        {
+            {"FILL", "8" },
+            {"TOP", "*" },
+            {"BOTTOM", "s" },
+            {"LEFT", ")" },
+            {"RIGHT", "(" },
+            {"UPRIGHT", "P" },
+            {"UPLEFT", "Y" },
+            {"DOWNRIGHT", "b" },
+            {"DOWNLEFT", "d" },
+            {"TOPLEFT", "'" },
+            {"BOTTOMLEFT", "." },
+            {"TOPRIGHT", "`" },
+            {"BOTTOMRIGHT", "," }
+        };
+        private static Dictionary<string, string> DarkValues = new Dictionary<string, string>() 
+        {
+            {"FILL", "O" },
+            {"TOP", "\"" },
+            {"BOTTOM", "o" },
+            {"LEFT", "}" },
+            {"RIGHT", "{" },
+            {"UPRIGHT", "+" },
+            {"UPLEFT", "+" },
+            {"DOWNRIGHT", "b" },
+            {"DOWNLEFT", "d" },
+            {"TOPLEFT", "'" },
+            {"BOTTOMLEFT", "." },
+            {"TOPRIGHT", "`" },
+            {"BOTTOMRIGHT", "," }
+        };
+        private static Dictionary<string, string> MediumValues = new Dictionary<string, string>()
+        {
+            {"FILL", "!" },
+            {"TOP", "\"" },
+            {"BOTTOM", "+" },
+            {"LEFT", "]" },
+            {"RIGHT", "[" },
+            {"UPRIGHT", ">" },
+            {"UPLEFT", "<" },
+            {"DOWNRIGHT", ">" },
+            {"DOWNLEFT", "<" },
+            {"TOPLEFT", "'" },
+            {"BOTTOMLEFT", "." },
+            {"TOPRIGHT", "`" },
+            {"BOTTOMRIGHT", "," }
+        };
+        private static Dictionary<string, string> LightValues = new Dictionary<string, string>() 
+        {
+            {"FILL", ":" },
+            {"TOP", "\"" },
+            {"BOTTOM", ":" },
+            {"LEFT", "!" },
+            {"RIGHT", "!" },
+            {"UPRIGHT", ";" },
+            {"UPLEFT", ":" },
+            {"DOWNRIGHT", ":" },
+            {"DOWNLEFT", ";" },
+            {"TOPLEFT", "'" },
+            {"BOTTOMLEFT", "." },
+            {"TOPRIGHT", "`" },
+            {"BOTTOMRIGHT", "," }
+        };
 
         private static Dictionary<string, string> extraChars = new Dictionary<string, string>()
         {
@@ -22,37 +120,43 @@ namespace AnimateTheConsole
         private static void Main(string[] args)
         {
             GetFunChars();
-            Console.CursorSize = 1;
+            Console.CursorVisible = false;
             //SetTerminalFullScreen();
             Thread.Sleep(10);
             windowWidth = Console.WindowWidth;
             windowHeight = Console.WindowHeight;
 
             string name = "SixOfCrows";
-            string solutionFolderPath = Directory.GetParent(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).ToString()).ToString()).ToString();
-            string imagesFolderPath = solutionFolderPath + @"\images\" + name;
-            string outputFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
-            string asciiFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
+            string imagesFolderPath = @"data\images\" + name;
+            string outputFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
+            string asciiFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
 
-            BrightnessSettings sixCrowSettings = MakeBrightnessSetting(.10F, .21F, .32F, .43F);
+            BrightnessSettings sixCrowSettings = MakeBrightnessSetting(.10F, .16F, .28F, .52F);
             BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .25F, .50F, .85F);
+            BrightnessSettings defaultSettings = MakeBrightnessSetting(.20F, .40F, .60F, .80F);
 
             ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings);
 
-            Console.Write("Shading Example : Hades Animation");
+            ShowExample(out name, out asciiFolderPath);
+        }
+
+        private static void ShowExample(out string name, out string asciiFolderPath)
+        {
+            Console.Write("Shading and Anti Aliasing at Higher Brightness Example : Hades Animation");
             Console.ReadKey(true);
             Console.Clear();
             name = "Hades";
-            asciiFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
+            asciiFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
             ReadAsciiFromFolder(asciiFolderPath);
 
-            Console.Write("Anti Aliasing Example : Six Of Crows Animation");
+            Console.Write("Shading and Anti Aliasing at Lower Brightness Example : Six Of Crows Animation");
             Console.ReadKey(true);
             Console.Clear();
             name = "SixOfCrows";
-            asciiFolderPath = solutionFolderPath + @"\image-to-ascii-output\" + name + "Frames";
+            asciiFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
             ReadAsciiFromFolder(asciiFolderPath);
         }
+
         private static void ReadAsciiFromFolder(string asciiFolderPath)
         {
             List<string> asciiFileList = new List<string>();
@@ -69,8 +173,16 @@ namespace AnimateTheConsole
             foreach (string frame in frames)
             {
                 Console.Write(frame);
-                //WriteScreenBarriers();
+                if (Console.KeyAvailable)
+                {
+                    Console.ReadKey(true);
+                    Console.ReadKey(true);
+                }
                 Thread.Sleep(50);
+                if(asciiFileList.Count <= 1)
+                {
+                    Console.ReadKey(true);
+                }
                 Console.Clear();
                 Console.SetCursorPosition(0, 0);
             }
@@ -95,9 +207,11 @@ namespace AnimateTheConsole
         private static void ConvertImagesToAscii(string imagesFolderPath, string outputFolderPath, string name, BrightnessSettings bs)
         {
             int count = 0;
+            int placeLimit = 10;
             string displayZeroes = "";
             List<string> imageFileArray = new List<string>();
             string[] foldersInImagePath = Directory.GetDirectories(imagesFolderPath);
+            
             if (!Directory.Exists(outputFolderPath))
             {
                 Directory.CreateDirectory(outputFolderPath);
@@ -107,35 +221,33 @@ namespace AnimateTheConsole
             {
                 imageFileArray.AddRange(Directory.GetFiles($"{foldersInImagePath[i]}", "*.jpg"));
             }
+
             //find the decimal place of frames we're working with and modify displayZeroes accordingly
             string fileCount = imageFileArray.Count.ToString();
             for (int i = 0; i < fileCount.Length - 1; i++)
             {
                 displayZeroes += "0";
             }
+
             foreach (string imageFile in imageFileArray)
             {
                 string imageText = ConvertImageToAsciiAntiAliasing(imageFile, bs);
                 //string imageText = ConvertImageToAsciiShading(imageFile, bs);
 
                 string outputFilePath = Path.Combine(outputFolderPath, $"{name}{displayZeroes}{count}.txt");
+
                 using (StreamWriter sw = new StreamWriter(outputFilePath))
                 {
                     sw.Write(imageText);
                 }
 
                 count++;
-                if (count < 10)
+                if (!(count < placeLimit))
                 {
-                    displayZeroes = "00";
-                }
-                else if (count < 100)
-                {
-                    displayZeroes = "0";
-                }
-                else
-                {
-                    displayZeroes = "";
+                    if (displayZeroes.Length > 0) {
+                        displayZeroes = displayZeroes.Substring(0,displayZeroes.Length-1);
+                    }
+                    placeLimit *= 10;
                 }
 
                 Console.WriteLine($"{displayZeroes}{count} / {fileCount}");
@@ -188,38 +300,79 @@ namespace AnimateTheConsole
             Bitmap bm = new Bitmap(image);
 
             //base height and width in pixels of a given pixel grid
-            int pixelGridWidth = bm.Width / windowWidth;
-            int pixelGridHeight = bm.Height / windowHeight;
+            int pixelGridWidth = (bm.Width / windowWidth);
+            int pixelGridHeight = (bm.Height / windowHeight);
 
             //Account for remaining pixels that would otherwise be cut off, used to determine current width and height.
-            float pixelWidthRemainder = (bm.Width % windowWidth) / (float)windowWidth;
-            float pixelHeightRemainder = (bm.Height % windowHeight) / (float)windowHeight;
+            int pixelWidthRemainder = bm.Width % windowWidth;
+            int pixelHeightRemainder = bm.Height % windowHeight;
+
+            int widthDenominator = FindCommonDenominator(pixelWidthRemainder, windowWidth - pixelWidthRemainder);
+            int gridsToAddWidthPixel = pixelWidthRemainder / widthDenominator;
+            int gridsNotToAddWidthPixel = (windowWidth - pixelWidthRemainder) / widthDenominator;
+            int addedWidthPixel = 1;
+            int widthCount = 0;
+            
+            int heightDenominator = FindCommonDenominator(pixelHeightRemainder, windowHeight - pixelHeightRemainder);
+            int gridsToAddHeightPixel = pixelHeightRemainder / heightDenominator;
+            int gridsNotToAddHeightPixel = (windowHeight - pixelHeightRemainder) / heightDenominator;
+            int addedHeightPixel = 1;
+            int heightCount = 0;
+
 
             float remainderWidthCheck = 0.0F;
             float remainderHeightCheck = 0.0F;
 
+            //set quadrant brightness averages starting at 0
             float topLeftQuadrant = 0F;
             float topRightQuadrant = 0F;
             float bottomLeftQuadrant = 0F;
             float bottomRightQuadrant = 0F;
 
-            float threshold = bs.LightThreshold;
-
+            //Set the grid width and height to start
             int currentGridWidth = pixelGridWidth;
             int currentGridHeight = pixelGridHeight;
 
             //Inside the entire image
-            for (int y = 0; y < bm.Height; y += currentGridHeight)
+            for (int y = 0; y < bm.Height - pixelGridHeight + (int)remainderHeightCheck; y += pixelGridHeight + addedHeightPixel)
             {
-                remainderHeightCheck += pixelHeightRemainder;
-                currentGridHeight = pixelGridHeight + (int)remainderHeightCheck;
+                if (heightCount < gridsToAddHeightPixel)
+                {
+                    addedHeightPixel = 1;
+                    heightCount++;
+                }
+                else if (heightCount < gridsToAddHeightPixel + gridsNotToAddHeightPixel)
+                {
+                    addedHeightPixel = 0;
+                    heightCount++;
+                }
+                if (heightCount >= gridsToAddHeightPixel + gridsNotToAddHeightPixel)
+                {
+                    heightCount = 0;
+                }
+                currentGridHeight = pixelGridHeight + addedHeightPixel;
 
                 if (y > 0) { imageText += splitString; }
 
-                for (int x = 0; x < bm.Width; x += currentGridWidth)
+                for (int x = 0; x < bm.Width - pixelGridWidth + (int)remainderWidthCheck; x += pixelGridWidth + addedWidthPixel)
                 {
-                    remainderWidthCheck += pixelWidthRemainder;
-                    currentGridWidth = pixelGridWidth + (int)remainderWidthCheck;
+                    
+                    if(widthCount < gridsToAddWidthPixel)
+                    {
+                        addedWidthPixel = 1;
+                        widthCount++;
+                    }
+                    else if(widthCount < gridsToAddWidthPixel + gridsNotToAddWidthPixel)
+                    {
+                        addedWidthPixel = 0;
+                        widthCount++;
+                    }
+                    if (widthCount >= gridsToAddWidthPixel + gridsNotToAddWidthPixel)
+                    {
+                        widthCount = 0;
+                    }
+
+                    currentGridWidth = pixelGridWidth + addedWidthPixel;
 
                     //number of pixels in this quadrant
                     int pixelQuadrantCount = currentGridWidth * currentGridHeight / 4;
@@ -270,58 +423,121 @@ namespace AnimateTheConsole
                     //average brightness of entire grid
                     float gridAverageBrightness = (topLeftQuadrant + topRightQuadrant + bottomLeftQuadrant + bottomRightQuadrant) / 4.0F;
 
+                    float brightestQuad = topLeftQuadrant;
+                    if(topRightQuadrant > brightestQuad)
+                    {
+                        brightestQuad = topRightQuadrant;
+                    }
+                    if (bottomLeftQuadrant > brightestQuad)
+                    {
+                        brightestQuad = bottomLeftQuadrant;
+                    }
+                    if (bottomRightQuadrant > brightestQuad)
+                    {
+                        brightestQuad = bottomRightQuadrant;
+                    }
 
-                    if (topLeftQuadrant < threshold && topRightQuadrant < threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
+                    Dictionary<string, string> chars;
+
+                    float threshold;
+                    if (brightestQuad <= bs.BlankThreshold)
                     {
                         imageText += " ";
+                        continue;
                     }
-                    else if (topLeftQuadrant >= threshold && topRightQuadrant < threshold && bottomLeftQuadrant >= threshold && bottomRightQuadrant >= threshold)
+                    else if(brightestQuad <= bs.LightThreshold)
                     {
-                        imageText += 'b';
+                        threshold = bs.BlankThreshold;
+                        chars = LightValues;
                     }
-                    else if (topLeftQuadrant >= threshold && topRightQuadrant < threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
+                    else if (brightestQuad <= bs.MediumThreshold)
                     {
-                        imageText += "`";
+                        threshold = bs.LightThreshold;
+                        chars = MediumValues;
                     }
-                    else if (topLeftQuadrant < threshold && topRightQuadrant >= threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
+                    else if (brightestQuad <= bs.DarkThreshold)
                     {
-                        imageText += "'";
-                    }
-                    else if (topLeftQuadrant >= threshold && topRightQuadrant >= threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant < threshold)
-                    {
-                        imageText += '"';
-                    }
-                    else if (topLeftQuadrant < threshold && topRightQuadrant < threshold && bottomLeftQuadrant >= threshold && bottomRightQuadrant < threshold)
-                    {
-                        imageText += ",";
-                    }
-                    else if (topLeftQuadrant < threshold && topRightQuadrant < threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant >= threshold)
-                    {
-                        imageText += ".";
-                    }
-                    else if (topLeftQuadrant < threshold && topRightQuadrant >= threshold && bottomLeftQuadrant >= threshold && bottomRightQuadrant >= threshold)
-                    {
-                        imageText += "d";
-                    }
-                    else if (topLeftQuadrant >= threshold && topRightQuadrant >= threshold && bottomLeftQuadrant < threshold && bottomRightQuadrant >= threshold)
-                    {
-                        imageText += "Y";
-                    }
-                    else if (topLeftQuadrant >= threshold && topRightQuadrant >= threshold && bottomLeftQuadrant >= threshold && bottomRightQuadrant < threshold)
-                    {
-                        imageText += "P";
+                        threshold = bs.MediumThreshold;
+                        chars = DarkValues;
                     }
                     else
                     {
-                        imageText += "8";
+                        threshold = bs.DarkThreshold;
+                        chars = FullValues;
+                    }
+                    bool topLeft = topLeftQuadrant > threshold;
+                    bool bottomLeft = bottomLeftQuadrant > threshold;
+                    bool topRight = topRightQuadrant > threshold;
+                    bool bottomRight = bottomRightQuadrant > threshold;
+
+                    if (!topLeft && !topRight && bottomLeft && bottomRight)
+                    {
+                        imageText += chars["BOTTOM"];
+                    }
+                    else if (topLeft && !topRight && !bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["TOPLEFT"];
+                    }
+                    else if (!topLeft && topRight && !bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["TOPRIGHT"];
+                    }
+                    else if (topLeft && topRight && !bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["TOP"];
+                    }
+                    else if (!topLeft && !topRight && bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["BOTTOMLEFT"];
+                    }
+                    else if (!topLeft && !topRight && !bottomLeft && bottomRight)
+                    {
+                        imageText += chars["BOTTOMRIGHT"];
+                    }
+                    else if (topLeft && !topRight && bottomLeft && bottomRight)
+                    {
+                        imageText += chars["UPLEFT"]; ;
+                    }
+                    else if (!topLeft && topRight && bottomLeft && bottomRight)
+                    {
+                        imageText += chars["UPRIGHT"]; 
+                    }
+                    else if (topLeft && topRight && !bottomLeft && bottomRight)
+                    {
+                        imageText += chars["DOWNRIGHT"];
+                    }
+                    else if (topLeft && topRight && bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["DOWNLEFT"];
+                    }
+                    else if (topLeft && !topRight && bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["FILL"];
+                    }
+                    else if(!topLeft && topRight && !bottomLeft && bottomRight)
+                    {
+                        imageText += chars["FILL"];
+                    }
+                    else
+                    {
+                        imageText += chars["FILL"];
                     }
                 }
             }
             return imageText;
         }
+        
 
-
-
+        private static int FindCommonDenominator(int a, int b)
+        {
+            while (b > 0)
+            {
+                int remainder = a % b;
+                a = b;
+                b = remainder;
+            }
+            return a;
+        }
         private static void RunBlockThroughScreen()
         {
             for (int y = 1; y < windowHeight - 1; y++)
@@ -454,4 +670,5 @@ namespace AnimateTheConsole
             return data;
         }
     }
+   
 }
