@@ -113,31 +113,36 @@ namespace AnimateTheConsole
             {"BOTTOMRIGHT", "," }
         };
 
-        private static Dictionary<string, string> extraChars = new Dictionary<string, string>()
-        {
-
-        };
+        
         private static void Main(string[] args)
         {
+            
             GetFunChars();
-            Console.CursorVisible = false;
+            //Console.CursorVisible = false;
             //SetTerminalFullScreen();
             Thread.Sleep(10);
             windowWidth = Console.WindowWidth;
             windowHeight = Console.WindowHeight;
+            windowWidth = 1584/5;
+            windowHeight = 396/10;
 
-            string name = "SixOfCrows";
-            string imagesFolderPath = @"data\images\" + name;
-            string outputFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
-            string asciiFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
+            string name = "CreationOfAdam";
+            string imagesFolderPath = @"..\..\..\data\images\" + name;
+            string outputFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
+            string asciiFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
 
             BrightnessSettings sixCrowSettings = MakeBrightnessSetting(.10F, .16F, .28F, .52F);
             BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .25F, .50F, .85F);
+            BrightnessSettings adamSettings = MakeBrightnessSetting(.42F, .55F, .70F, .85F);
+            BrightnessSettings coinSettings = MakeBrightnessSetting(.10F, .20F, .45F, .65F);
             BrightnessSettings defaultSettings = MakeBrightnessSetting(.20F, .40F, .60F, .80F);
+            BrightnessSettings negativeSettings = MakeBrightnessSetting(.90F, .15F, .10F, .05F, true);
 
-            ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings);
-
-            ShowExample(out name, out asciiFolderPath);
+            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, adamSettings);
+            Console.ReadKey(true);
+            ReadAsciiFromFolder(asciiFolderPath);
+          
+            //ShowExample(out name, out asciiFolderPath);
         }
 
         private static void ShowExample(out string name, out string asciiFolderPath)
@@ -194,14 +199,16 @@ namespace AnimateTheConsole
             public float LightThreshold;
             public float MediumThreshold;
             public float DarkThreshold;
+            public bool isPhotoNegative;
         }
-        private static BrightnessSettings MakeBrightnessSetting(float blank, float light, float medium, float dark)
+        private static BrightnessSettings MakeBrightnessSetting(float blank, float light, float medium, float dark, bool isPhotoNegative = false)
         {
             BrightnessSettings bs = new BrightnessSettings();
             bs.BlankThreshold = blank;
             bs.LightThreshold = light;
             bs.MediumThreshold = medium;
             bs.DarkThreshold = dark;
+            bs.isPhotoNegative = isPhotoNegative;
             return bs;
         }
         private static void ConvertImagesToAscii(string imagesFolderPath, string outputFolderPath, string name, BrightnessSettings bs)
@@ -228,17 +235,17 @@ namespace AnimateTheConsole
             {
                 displayZeroes += "0";
             }
+            Console.WriteLine($"{displayZeroes}{count} / {fileCount}");
 
             foreach (string imageFile in imageFileArray)
             {
-                string imageText = ConvertImageToAsciiAntiAliasing(imageFile, bs);
-                //string imageText = ConvertImageToAsciiShading(imageFile, bs);
+                string imageText = ConvertImageToAscii(imageFile, bs);
 
                 string outputFilePath = Path.Combine(outputFolderPath, $"{name}{displayZeroes}{count}.txt");
 
                 using (StreamWriter sw = new StreamWriter(outputFilePath))
                 {
-                    sw.Write(imageText);
+                    sw.WriteLine(imageText);
                 }
 
                 count++;
@@ -250,7 +257,6 @@ namespace AnimateTheConsole
                     placeLimit *= 10;
                 }
 
-                Console.WriteLine($"{displayZeroes}{count} / {fileCount}");
             }
         }
         private static string ConvertImageToAsciiShading(string imageFile, BrightnessSettings bs)
@@ -260,6 +266,7 @@ namespace AnimateTheConsole
             Bitmap bm = new Bitmap(image, windowWidth, windowHeight);
             for (int y = 0; y < windowHeight; y++)
             {
+
                 if (y > 0) { imageText += splitString; }
                 for (int x = 0; x < windowWidth; x++)
                 {
@@ -293,7 +300,7 @@ namespace AnimateTheConsole
             }
             return imageText;
         }
-        private static string ConvertImageToAsciiAntiAliasing(string imageFile, BrightnessSettings bs)
+        private static string ConvertImageToAscii(string imageFile, BrightnessSettings bs)
         {
             string imageText = "";
             Image image = Image.FromFile(imageFile);
@@ -336,6 +343,7 @@ namespace AnimateTheConsole
             //Inside the entire image
             for (int y = 0; y < bm.Height - pixelGridHeight + (int)remainderHeightCheck; y += pixelGridHeight + addedHeightPixel)
             {
+
                 if (heightCount < gridsToAddHeightPixel)
                 {
                     addedHeightPixel = 1;
@@ -352,7 +360,7 @@ namespace AnimateTheConsole
                 }
                 currentGridHeight = pixelGridHeight + addedHeightPixel;
 
-                if (y > 0) { imageText += splitString; }
+                if (y > 0) { imageText += '\n'; }
 
                 for (int x = 0; x < bm.Width - pixelGridWidth + (int)remainderWidthCheck; x += pixelGridWidth + addedWidthPixel)
                 {
@@ -380,32 +388,40 @@ namespace AnimateTheConsole
                     //Inside a single pixelGrid
                     for (int i = 0; i < currentGridWidth; i++)
                     {
+                        
                         for (int j = 0; j < currentGridHeight; j++)
                         {
                             Color thisPixel = bm.GetPixel(x + i, y + j);
+                            float brightness = thisPixel.GetBrightness();
+
+                            if (thisPixel.GetHue() >= 48 || thisPixel.GetSaturation() <= .10F)
+                            {
+                                brightness = 0F;
+                            }
+
                             if (i <= currentGridWidth / 2 && j <= currentGridHeight / 2)
                             {
                                 //top left
-                                topLeftQuadrant += thisPixel.GetBrightness();
+                                topLeftQuadrant += brightness;
                             }
                             if (i > currentGridWidth / 2 && j <= currentGridHeight / 2)
                             {
                                 //top right
-                                topRightQuadrant += thisPixel.GetBrightness();
+                                topRightQuadrant += brightness;
                             }
                             if (i > currentGridWidth / 2 && j > currentGridHeight / 2)
                             {
                                 //bottom right
-                                bottomRightQuadrant += thisPixel.GetBrightness();
+                                bottomRightQuadrant += brightness;
                             }
                             if (i <= currentGridWidth / 2 && j > currentGridHeight / 2)
                             {
                                 //bottom left
-                                bottomLeftQuadrant += thisPixel.GetBrightness();
+                                bottomLeftQuadrant += brightness;
                             }
                         }
                     }
-                    if(remainderWidthCheck > 1.0F)
+                    if (remainderWidthCheck > 1.0F)
                     {
                         remainderWidthCheck -= 1.0f;
                     }
@@ -423,48 +439,67 @@ namespace AnimateTheConsole
                     //average brightness of entire grid
                     float gridAverageBrightness = (topLeftQuadrant + topRightQuadrant + bottomLeftQuadrant + bottomRightQuadrant) / 4.0F;
 
-                    float brightestQuad = topLeftQuadrant;
-                    if(topRightQuadrant > brightestQuad)
-                    {
-                        brightestQuad = topRightQuadrant;
-                    }
-                    if (bottomLeftQuadrant > brightestQuad)
-                    {
-                        brightestQuad = bottomLeftQuadrant;
-                    }
-                    if (bottomRightQuadrant > brightestQuad)
-                    {
-                        brightestQuad = bottomRightQuadrant;
-                    }
 
                     Dictionary<string, string> chars;
 
                     float threshold;
-                    if (brightestQuad <= bs.BlankThreshold)
+                    if (bs.isPhotoNegative)
                     {
-                        imageText += " ";
-                        continue;
-                    }
-                    else if(brightestQuad <= bs.LightThreshold)
-                    {
-                        threshold = bs.BlankThreshold;
-                        chars = LightValues;
-                    }
-                    else if (brightestQuad <= bs.MediumThreshold)
-                    {
-                        threshold = bs.LightThreshold;
-                        chars = MediumValues;
-                    }
-                    else if (brightestQuad <= bs.DarkThreshold)
-                    {
-                        threshold = bs.MediumThreshold;
-                        chars = DarkValues;
+                        if (gridAverageBrightness >= bs.BlankThreshold)
+                        {
+                            imageText += " ";
+                            continue;
+                        }
+                        else if (gridAverageBrightness >= bs.LightThreshold)
+                        {
+                            threshold = bs.BlankThreshold;
+                            chars = LightValues;
+                        }
+                        else if (gridAverageBrightness >= bs.MediumThreshold)
+                        {
+                            threshold = bs.LightThreshold;
+                            chars = MediumValues;
+                        }
+                        else if (gridAverageBrightness >= bs.DarkThreshold)
+                        {
+                            threshold = bs.MediumThreshold;
+                            chars = DarkValues;
+                        }
+                        else
+                        {
+                            threshold = bs.DarkThreshold;
+                            chars = FullValues;
+                        }
                     }
                     else
                     {
-                        threshold = bs.DarkThreshold;
-                        chars = FullValues;
+                        if (gridAverageBrightness <= bs.BlankThreshold)
+                        {
+                            imageText += " ";
+                            continue;
+                        }
+                        else if (gridAverageBrightness <= bs.LightThreshold)
+                        {
+                            threshold = bs.BlankThreshold;
+                            chars = LightValues;
+                        }
+                        else if (gridAverageBrightness <= bs.MediumThreshold)
+                        {
+                            threshold = bs.LightThreshold;
+                            chars = MediumValues;
+                        }
+                        else if (gridAverageBrightness <= bs.DarkThreshold)
+                        {
+                            threshold = bs.MediumThreshold;
+                            chars = DarkValues;
+                        }
+                        else
+                        {
+                            threshold = bs.DarkThreshold;
+                            chars = FullValues;
+                        }
                     }
+                   
                     bool topLeft = topLeftQuadrant > threshold;
                     bool bottomLeft = bottomLeftQuadrant > threshold;
                     bool topRight = topRightQuadrant > threshold;
@@ -510,14 +545,6 @@ namespace AnimateTheConsole
                     {
                         imageText += chars["DOWNLEFT"];
                     }
-                    else if (topLeft && !topRight && bottomLeft && !bottomRight)
-                    {
-                        imageText += chars["FILL"];
-                    }
-                    else if(!topLeft && topRight && !bottomLeft && bottomRight)
-                    {
-                        imageText += chars["FILL"];
-                    }
                     else
                     {
                         imageText += chars["FILL"];
@@ -526,8 +553,6 @@ namespace AnimateTheConsole
             }
             return imageText;
         }
-        
-
         private static int FindCommonDenominator(int a, int b)
         {
             while (b > 0)
@@ -538,6 +563,9 @@ namespace AnimateTheConsole
             }
             return a;
         }
+
+
+        private static Dictionary<string, string> extraChars = new Dictionary<string, string>();
         private static void RunBlockThroughScreen()
         {
             for (int y = 1; y < windowHeight - 1; y++)
