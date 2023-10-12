@@ -118,51 +118,54 @@ namespace AnimateTheConsole
         {
             
             GetFunChars();
-            //Console.CursorVisible = false;
             //SetTerminalFullScreen();
-            Thread.Sleep(10);
+            //Console.SetWindowPosition(0, 0);
+            Console.CursorVisible = false;
+            SetFontSize(12,23);
             windowWidth = Console.WindowWidth;
             windowHeight = Console.WindowHeight;
-            windowWidth = 1584/5;
-            windowHeight = 396/10;
 
-            string name = "CreationOfAdam";
+
+            string name = "SixOfCrows";
             string imagesFolderPath = @"..\..\..\data\images\" + name;
             string outputFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
             string asciiFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
 
+            ColorMask adamMask = MakeColorMask(48.0F,360.0F,0.0F,0.12F);
+
             BrightnessSettings sixCrowSettings = MakeBrightnessSetting(.10F, .16F, .28F, .52F);
-            BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .25F, .50F, .85F);
+            BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .25F, .55F, .75F);
             BrightnessSettings adamSettings = MakeBrightnessSetting(.42F, .55F, .70F, .85F);
             BrightnessSettings coinSettings = MakeBrightnessSetting(.10F, .20F, .45F, .65F);
             BrightnessSettings defaultSettings = MakeBrightnessSetting(.20F, .40F, .60F, .80F);
             BrightnessSettings negativeSettings = MakeBrightnessSetting(.90F, .15F, .10F, .05F, true);
 
-            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, adamSettings);
-            Console.ReadKey(true);
+            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings);
+            //Console.ReadKey(true);
+
             ReadAsciiFromFolder(asciiFolderPath);
-          
-            //ShowExample(out name, out asciiFolderPath);
+
+            //ShowExample(name, asciiFolderPath);
         }
 
-        private static void ShowExample(out string name, out string asciiFolderPath)
+        private static void ShowExample(string name, string asciiFolderPath)
         {
             Console.Write("Shading and Anti Aliasing at Higher Brightness Example : Hades Animation");
             Console.ReadKey(true);
             Console.Clear();
             name = "Hades";
-            asciiFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
-            ReadAsciiFromFolder(asciiFolderPath);
+            asciiFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
+            ReadAsciiFromFolder(asciiFolderPath, false);
 
             Console.Write("Shading and Anti Aliasing at Lower Brightness Example : Six Of Crows Animation");
             Console.ReadKey(true);
             Console.Clear();
             name = "SixOfCrows";
-            asciiFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
+            asciiFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
             ReadAsciiFromFolder(asciiFolderPath);
         }
 
-        private static void ReadAsciiFromFolder(string asciiFolderPath)
+        private static void ReadAsciiFromFolder(string asciiFolderPath, bool isDrawingWhite = true)
         {
             List<string> asciiFileList = new List<string>();
             List<string> frames = new List<string>();
@@ -175,6 +178,18 @@ namespace AnimateTheConsole
                     frames.Add(sr.ReadToEnd().Replace(splitString, "\n"));
                 }
             }
+
+            if (isDrawingWhite)
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.BackgroundColor = ConsoleColor.Black;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.BackgroundColor = ConsoleColor.White;
+            }
+
             foreach (string frame in frames)
             {
                 Console.Write(frame);
@@ -188,7 +203,6 @@ namespace AnimateTheConsole
                 {
                     Console.ReadKey(true);
                 }
-                Console.Clear();
                 Console.SetCursorPosition(0, 0);
             }
         }
@@ -201,6 +215,13 @@ namespace AnimateTheConsole
             public float DarkThreshold;
             public bool isPhotoNegative;
         }
+        struct ColorMask
+        {
+            public float HueMin;
+            public float HueMax;
+            public float SaturationMin;
+            public float SaturationsMax;
+        }
         private static BrightnessSettings MakeBrightnessSetting(float blank, float light, float medium, float dark, bool isPhotoNegative = false)
         {
             BrightnessSettings bs = new BrightnessSettings();
@@ -211,7 +232,16 @@ namespace AnimateTheConsole
             bs.isPhotoNegative = isPhotoNegative;
             return bs;
         }
-        private static void ConvertImagesToAscii(string imagesFolderPath, string outputFolderPath, string name, BrightnessSettings bs)
+        private static ColorMask MakeColorMask(float hueMin, float hueMax, float saturationMin, float saturationMax)
+        {
+            ColorMask cm = new ColorMask();
+            cm.HueMin = hueMin;
+            cm.HueMax = hueMax;
+            cm.SaturationMin = saturationMin;
+            cm.SaturationsMax = saturationMax;
+            return cm;
+        }
+        private static void ConvertImagesToAscii(string imagesFolderPath, string outputFolderPath, string name, BrightnessSettings bs, ColorMask cm = new ColorMask(), bool keepBaseDimensions = false)
         {
             int count = 0;
             int placeLimit = 10;
@@ -235,11 +265,12 @@ namespace AnimateTheConsole
             {
                 displayZeroes += "0";
             }
-            Console.WriteLine($"{displayZeroes}{count} / {fileCount}");
+            
 
             foreach (string imageFile in imageFileArray)
             {
-                string imageText = ConvertImageToAscii(imageFile, bs);
+
+                string imageText = ConvertImageToAscii(imageFile, bs, cm, keepBaseDimensions);
 
                 string outputFilePath = Path.Combine(outputFolderPath, $"{name}{displayZeroes}{count}.txt");
 
@@ -257,6 +288,7 @@ namespace AnimateTheConsole
                     placeLimit *= 10;
                 }
 
+                Console.WriteLine($"{displayZeroes}{count} / {fileCount}");
             }
         }
         private static string ConvertImageToAsciiShading(string imageFile, BrightnessSettings bs)
@@ -300,11 +332,17 @@ namespace AnimateTheConsole
             }
             return imageText;
         }
-        private static string ConvertImageToAscii(string imageFile, BrightnessSettings bs)
+        private static string ConvertImageToAscii(string imageFile, BrightnessSettings bs, ColorMask cm, bool keepBaseDimensions = false)
         {
             string imageText = "";
             Image image = Image.FromFile(imageFile);
             Bitmap bm = new Bitmap(image);
+
+            if (keepBaseDimensions)
+            {
+                windowWidth = bm.Width / 4;
+                windowHeight = bm.Height / 8;
+            }
 
             //base height and width in pixels of a given pixel grid
             int pixelGridWidth = (bm.Width / windowWidth);
@@ -394,7 +432,7 @@ namespace AnimateTheConsole
                             Color thisPixel = bm.GetPixel(x + i, y + j);
                             float brightness = thisPixel.GetBrightness();
 
-                            if (thisPixel.GetHue() >= 48 || thisPixel.GetSaturation() <= .10F)
+                            if (thisPixel.GetHue() > cm.HueMin && thisPixel.GetHue() < cm.HueMax || thisPixel.GetSaturation() > cm.SaturationMin && thisPixel.GetSaturation() < cm.SaturationsMax)
                             {
                                 brightness = 0F;
                             }
@@ -445,22 +483,22 @@ namespace AnimateTheConsole
                     float threshold;
                     if (bs.isPhotoNegative)
                     {
-                        if (gridAverageBrightness >= bs.BlankThreshold)
+                        if (gridAverageBrightness >= bs.DarkThreshold)
                         {
                             imageText += " ";
                             continue;
                         }
-                        else if (gridAverageBrightness >= bs.LightThreshold)
+                        else if (gridAverageBrightness >= bs.MediumThreshold)
                         {
                             threshold = bs.BlankThreshold;
                             chars = LightValues;
                         }
-                        else if (gridAverageBrightness >= bs.MediumThreshold)
+                        else if (gridAverageBrightness >= bs.LightThreshold)
                         {
                             threshold = bs.LightThreshold;
                             chars = MediumValues;
                         }
-                        else if (gridAverageBrightness >= bs.DarkThreshold)
+                        else if (gridAverageBrightness >= bs.BlankThreshold)
                         {
                             threshold = bs.MediumThreshold;
                             chars = DarkValues;
@@ -644,15 +682,71 @@ namespace AnimateTheConsole
                 extraChars[character.Key] = encode.GetString(byteArray);
             }
         }
-        // Structure used by GetWindowRect
+
+
+        //All this stuff is for font manipulation
+        private enum StdHandle
+        {
+            OutputHandle = -11
+        }
+        [StructLayout(LayoutKind.Sequential)]
+        public struct COORD
+        {
+            public short X;
+            public short Y;
+
+            public COORD(short X, short Y)
+            {
+                this.X = X;
+                this.Y = Y;
+            }
+        };
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct CONSOLE_FONT_INFO_EX
+        {
+            public uint cbSize;
+            public uint nFont;
+            public COORD dwFontSize;
+            public int FontFamily;
+            public int FontWeight;
+
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] // Edit sizeconst if the font name is too big
+            public string FaceName;
+        }
+        private static void SetFontSize(short fontWidth, short fontHeight)
+        {
+            [DllImport("kernel32")]
+            static extern IntPtr GetStdHandle(StdHandle index); 
+            IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
+            [DllImport("kernel32.dll", SetLastError = true)]
+            static extern Int32 SetCurrentConsoleFontEx(IntPtr ConsoleOutput, bool MaximumWindow, ref CONSOLE_FONT_INFO_EX ConsoleCurrentFontEx);
+            [DllImport("kernel32.dll", SetLastError = true)]
+            static extern Int32 GetCurrentConsoleFontEx(IntPtr ConsoleOutput, bool MaximumWindow, ref CONSOLE_FONT_INFO_EX ConsoleCurrentFontEx);
+            
+            // Instantiating CONSOLE_FONT_INFO_EX and setting its size (the function will fail otherwise)
+            CONSOLE_FONT_INFO_EX ConsoleFontInfo = new CONSOLE_FONT_INFO_EX();
+            ConsoleFontInfo.cbSize = (uint)Marshal.SizeOf(ConsoleFontInfo);
+
+            // Optional, implementing this will keep the fontweight and fontsize from changing
+            GetCurrentConsoleFontEx(GetStdHandle(StdHandle.OutputHandle), false, ref ConsoleFontInfo);
+
+            ConsoleFontInfo.dwFontSize.X = fontWidth;
+            ConsoleFontInfo.dwFontSize.Y = fontHeight;
+
+            SetCurrentConsoleFontEx(GetStdHandle(StdHandle.OutputHandle), false, ref ConsoleFontInfo);
+
+            Console.WindowHeight = Console.LargestWindowHeight;
+            Console.WindowWidth = Console.LargestWindowWidth;
+        }
+
+        //Method to set the terminal window to full screen
         struct WindowDimensions
         {
             public int Left;
             public int Top;
             public int Right;
             public int Bottom;
-        }
-        //Method to set the terminal window to full screen
+        }  // Structure used by GetWindowRect
         private static void SetTerminalFullScreen()
         {
             // Import the necessary functions from user32.dll
