@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows;
+using System.Numerics;
 
 namespace AnimateTheConsole
 {
@@ -48,6 +49,7 @@ namespace AnimateTheConsole
         private static int windowWidth;
         private static int windowHeight;
         private static string splitString = "|";
+        private static Vector2 screenWidthHeight;
         private static Dictionary<string, string> FullValues = new Dictionary<string, string>()
         {
             {"FILL", "8" },
@@ -116,22 +118,24 @@ namespace AnimateTheConsole
         
         private static void Main(string[] args)
         {
-            
-            GetFunChars();
-            //SetTerminalFullScreen();
-            //Console.SetWindowPosition(0, 0);
+            //TestCode.ConsoleBufferExample();
+
+            screenWidthHeight = SetTerminalFullScreen();
             Console.CursorVisible = false;
-            SetFontSize(12,23);
-            windowWidth = Console.WindowWidth;
-            windowHeight = Console.WindowHeight;
+            SetFontSize(21);
+            //Console.SetWindowPosition(0, 0);
+
+            int test1 = Console.BufferWidth + Console.BufferHeight;
+            windowWidth = Console.LargestWindowWidth;
+            windowHeight = Console.LargestWindowHeight;
 
 
-            string name = "SixOfCrows";
+            string name = "Hades";
             string imagesFolderPath = @"..\..\..\data\images\" + name;
             string outputFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
             string asciiFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
 
-            ColorMask adamMask = MakeColorMask(48.0F,360.0F,0.0F,0.12F);
+            ColorMask adamMask = MakeColorMask(48.0F, 360.0F, 0.0F, 0.12F);
 
             BrightnessSettings sixCrowSettings = MakeBrightnessSetting(.10F, .16F, .28F, .52F);
             BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .25F, .55F, .75F);
@@ -140,8 +144,7 @@ namespace AnimateTheConsole
             BrightnessSettings defaultSettings = MakeBrightnessSetting(.20F, .40F, .60F, .80F);
             BrightnessSettings negativeSettings = MakeBrightnessSetting(.90F, .15F, .10F, .05F, true);
 
-            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings);
-            //Console.ReadKey(true);
+            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, hadesSettings, default, true);
 
             ReadAsciiFromFolder(asciiFolderPath);
 
@@ -155,7 +158,7 @@ namespace AnimateTheConsole
             Console.Clear();
             name = "Hades";
             asciiFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
-            ReadAsciiFromFolder(asciiFolderPath, false);
+            ReadAsciiFromFolder(asciiFolderPath);
 
             Console.Write("Shading and Anti Aliasing at Lower Brightness Example : Six Of Crows Animation");
             Console.ReadKey(true);
@@ -167,28 +170,32 @@ namespace AnimateTheConsole
 
         private static void ReadAsciiFromFolder(string asciiFolderPath, bool isDrawingWhite = true)
         {
+            int asciiWidth = 0;
+            int asciiHeight = 0;
             List<string> asciiFileList = new List<string>();
             List<string> frames = new List<string>();
             asciiFileList.AddRange(Directory.GetFiles(asciiFolderPath, "*.txt"));
 
             foreach (string filePath in asciiFileList)
             {
+                string toAdd = "";
                 using (StreamReader sr = new StreamReader(filePath))
                 {
-                    frames.Add(sr.ReadToEnd().Replace(splitString, "\n"));
+                    toAdd += sr.ReadToEnd().Replace(splitString, "\n"); 
                 }
+                frames.Add(toAdd);
             }
+            asciiWidth = frames[0].Split("\n")[0].Length;
+            asciiHeight = frames[0].Split("\n").Length;
 
-            if (isDrawingWhite)
-            {
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.BackgroundColor = ConsoleColor.Black;
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Black;
-                Console.BackgroundColor = ConsoleColor.White;
-            }
+            //We need to set the font size first, depending on the height and width of the ascii image, then alter the buffer size to fit.
+            //Font size needs to be determined via a relationship between height and width of ascii image and screen resolution
+            //(reverse engineer how LargestWindowHeight and Width are calculated)
+            int fontHeight = (int)((screenWidthHeight.Y / asciiHeight) % 1 == 0? screenWidthHeight.Y / asciiHeight : screenWidthHeight.Y / asciiHeight - 1);
+            
+            //float fontSize = fontHeight >= fontWidth? fontHeight : fontHeight - (fontWidth-fontHeight);
+            SetFontSize((short)fontHeight);
+            Console.SetBufferSize(Console.WindowLeft + Console.LargestWindowWidth, Console.WindowTop + Console.LargestWindowHeight);
 
             foreach (string frame in frames)
             {
@@ -340,8 +347,8 @@ namespace AnimateTheConsole
 
             if (keepBaseDimensions)
             {
-                windowWidth = bm.Width / 4;
-                windowHeight = bm.Height / 8;
+                windowHeight = bm.Height / 8 ;
+                windowWidth = bm.Width / 4 ;
             }
 
             //base height and width in pixels of a given pixel grid
@@ -604,65 +611,6 @@ namespace AnimateTheConsole
 
 
         private static Dictionary<string, string> extraChars = new Dictionary<string, string>();
-        private static void RunBlockThroughScreen()
-        {
-            for (int y = 1; y < windowHeight - 1; y++)
-            {
-                for (int x = 1; x < windowWidth; x++)
-                {
-                    if (x > 1)
-                    {
-                        Console.SetCursorPosition(x - 1, y);
-                        Console.Write(' ');
-                    }
-                    if (x < windowWidth - 1)
-                    {
-                        Console.SetCursorPosition(x, y);
-                        Console.Write(extraChars["FULLBLOCK"]);
-                    }
-                    Thread.Sleep(10);
-                }
-            }
-        }
-        private static void WriteScreenBarriers()
-        {
-            for (int y = 0; y < windowHeight; y++)
-            {
-                for (int x = 0; x < windowWidth; x++)
-                {
-                    if (y == 0 && x == 0)
-                    {
-                        Console.SetCursorPosition(x, y);
-                        Console.Write(extraChars["BOXTOPLEFT"]);
-                    }
-                    else if (y == 0 && x == windowWidth - 1)
-                    {
-                        Console.SetCursorPosition(x, y);
-                        Console.Write(extraChars["BOXTOPRIGHT"]);
-                    }
-                    else if (y == windowHeight - 1 && x == 0)
-                    {
-                        Console.SetCursorPosition(x, y);
-                        Console.Write(extraChars["BOXBOTTOMLEFT"]);
-                    }
-                    else if (y == windowHeight - 1 && x == windowWidth - 1)
-                    {
-                        Console.SetCursorPosition(x, y);
-                        Console.Write(extraChars["BOXBOTTOMRIGHT"]);
-                    }
-                    else if (y == 0 || y == windowHeight - 1)
-                    {
-                        Console.SetCursorPosition(x, y);
-                        Console.Write(extraChars["BOXHORIZONTAL"]);
-                    }
-                    else if (x == 0 || x == windowWidth - 1)
-                    {
-                        Console.SetCursorPosition(x, y);
-                        Console.Write(extraChars["BOXVERTICAL"]);
-                    }
-                }
-            }
-        }
         private static void GetFunChars()
         {
             Encoding encode = Encoding.UTF8;
@@ -713,7 +661,7 @@ namespace AnimateTheConsole
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] // Edit sizeconst if the font name is too big
             public string FaceName;
         }
-        private static void SetFontSize(short fontWidth, short fontHeight)
+        private static void SetFontSize(short fontHeight)
         {
             [DllImport("kernel32")]
             static extern IntPtr GetStdHandle(StdHandle index); 
@@ -730,13 +678,11 @@ namespace AnimateTheConsole
             // Optional, implementing this will keep the fontweight and fontsize from changing
             GetCurrentConsoleFontEx(GetStdHandle(StdHandle.OutputHandle), false, ref ConsoleFontInfo);
 
-            ConsoleFontInfo.dwFontSize.X = fontWidth;
             ConsoleFontInfo.dwFontSize.Y = fontHeight;
 
             SetCurrentConsoleFontEx(GetStdHandle(StdHandle.OutputHandle), false, ref ConsoleFontInfo);
 
-            Console.WindowHeight = Console.LargestWindowHeight;
-            Console.WindowWidth = Console.LargestWindowWidth;
+            Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
         }
 
         //Method to set the terminal window to full screen
@@ -747,7 +693,7 @@ namespace AnimateTheConsole
             public int Right;
             public int Bottom;
         }  // Structure used by GetWindowRect
-        private static void SetTerminalFullScreen()
+        private static Vector2 SetTerminalFullScreen()
         {
             // Import the necessary functions from user32.dll
             [DllImport("user32.dll")]
@@ -772,7 +718,10 @@ namespace AnimateTheConsole
             int width = screenRect.Right - screenRect.Left;
             int height = screenRect.Bottom - screenRect.Top;
             //Sets the window to the left and top of the screen, then sets the new width and height to what was just calculated, and then says yes, recreate the window to match this information
+            
             MoveWindow(consoleWindowHandle, screenRect.Left, screenRect.Top, width, height, true);
+
+            return new Vector2(screenRect.Left + width, screenRect.Top + height);
         }
         //Method to convert the UTF-8 hex codes into byte arrays that can be converted into our fun characters
         public static byte[] ConvertHexStringToByteArray(string hexString)
