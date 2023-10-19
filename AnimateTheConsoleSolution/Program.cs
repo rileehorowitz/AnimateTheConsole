@@ -50,6 +50,7 @@ namespace AnimateTheConsole
         private static int windowHeight;
         private static string splitString = "|";
         private static Vector2 screenWidthHeight;
+        private const int FontSizeDefault = 21;
         private static Dictionary<string, string> FullValues = new Dictionary<string, string>()
         {
             {"FILL", "8" },
@@ -130,7 +131,7 @@ namespace AnimateTheConsole
             windowHeight = Console.LargestWindowHeight;
 
 
-            string name = "Hades";
+            string name = "CreationOfAdam";
             string imagesFolderPath = @"..\..\..\data\images\" + name;
             string outputFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
             string asciiFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
@@ -144,34 +145,36 @@ namespace AnimateTheConsole
             BrightnessSettings defaultSettings = MakeBrightnessSetting(.20F, .40F, .60F, .80F);
             BrightnessSettings negativeSettings = MakeBrightnessSetting(.90F, .15F, .10F, .05F, true);
 
-            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, hadesSettings, default, true);
+            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, adamSettings, adamMask, true);
 
-            ReadAsciiFromFolder(asciiFolderPath);
+            //ReadAsciiFromFolder(asciiFolderPath);
 
-            //ShowExample(name, asciiFolderPath);
+            ShowExample();
         }
 
-        private static void ShowExample(string name, string asciiFolderPath)
+        private static void ShowExample()
         {
+            string name = "";
+            string path = "";
             Console.Write("Shading and Anti Aliasing at Higher Brightness Example : Hades Animation");
             Console.ReadKey(true);
             Console.Clear();
             name = "Hades";
-            asciiFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
-            ReadAsciiFromFolder(asciiFolderPath);
+            path = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
+            ReadAsciiFromFolder(path);
 
             Console.Write("Shading and Anti Aliasing at Lower Brightness Example : Six Of Crows Animation");
             Console.ReadKey(true);
             Console.Clear();
             name = "SixOfCrows";
-            asciiFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
-            ReadAsciiFromFolder(asciiFolderPath);
+            path = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
+            ReadAsciiFromFolder(path);
         }
 
         private static void ReadAsciiFromFolder(string asciiFolderPath, bool isDrawingWhite = true)
         {
-            int asciiWidth = 0;
-            int asciiHeight = 0;
+            float asciiWidth = 0;
+            float asciiHeight = 0;
             List<string> asciiFileList = new List<string>();
             List<string> frames = new List<string>();
             asciiFileList.AddRange(Directory.GetFiles(asciiFolderPath, "*.txt"));
@@ -192,9 +195,11 @@ namespace AnimateTheConsole
             //Font size needs to be determined via a relationship between height and width of ascii image and screen resolution
             //(reverse engineer how LargestWindowHeight and Width are calculated)
             int fontHeight = (int)((screenWidthHeight.Y / asciiHeight) % 1 == 0? screenWidthHeight.Y / asciiHeight : screenWidthHeight.Y / asciiHeight - 1);
-            
-            //float fontSize = fontHeight >= fontWidth? fontHeight : fontHeight - (fontWidth-fontHeight);
+            int fontWidth = (int)((screenWidthHeight.X / asciiWidth) % 1 == 0? screenWidthHeight.X / asciiWidth : screenWidthHeight.X / asciiWidth - 1);
             SetFontSize((short)fontHeight);
+
+            if (asciiWidth > Console.LargestWindowWidth) { SetFontSize((short)(fontWidth * 2)); }
+           
             Console.SetBufferSize(Console.WindowLeft + Console.LargestWindowWidth, Console.WindowTop + Console.LargestWindowHeight);
 
             foreach (string frame in frames)
@@ -212,6 +217,8 @@ namespace AnimateTheConsole
                 }
                 Console.SetCursorPosition(0, 0);
             }
+            SetFontSize(FontSizeDefault);
+            Console.SetBufferSize(Console.WindowLeft + Console.LargestWindowWidth, Console.WindowTop + Console.LargestWindowHeight);
         }
 
         struct BrightnessSettings
@@ -342,8 +349,8 @@ namespace AnimateTheConsole
         private static string ConvertImageToAscii(string imageFile, BrightnessSettings bs, ColorMask cm, bool keepBaseDimensions = false)
         {
             string imageText = "";
-            Image image = Image.FromFile(imageFile);
-            Bitmap bm = new Bitmap(image);
+            //Image image = Image.FromFile(imageFile);
+            Bitmap bm = new Bitmap(imageFile);
 
             if (keepBaseDimensions)
             {
@@ -721,7 +728,7 @@ namespace AnimateTheConsole
             
             MoveWindow(consoleWindowHandle, screenRect.Left, screenRect.Top, width, height, true);
 
-            return new Vector2(screenRect.Left + width, screenRect.Top + height);
+            return new Vector2(width, height);
         }
         //Method to convert the UTF-8 hex codes into byte arrays that can be converted into our fun characters
         public static byte[] ConvertHexStringToByteArray(string hexString)

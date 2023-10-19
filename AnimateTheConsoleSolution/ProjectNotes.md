@@ -3,6 +3,8 @@
 
 - Organize code into classes. Encapsulate more.
 
+- Pull images into a list of images inside one using block instead of pulling from individual files in a for loop. (line 267)
+
 - Set up character dictionaries with multiple fill character options, and have the converter randomly choose from various fill characters.
 
 - Set color themes for different "videos" based on brightness, Foreground and Background. Maybe pull colors from image to dynamically create pallet
