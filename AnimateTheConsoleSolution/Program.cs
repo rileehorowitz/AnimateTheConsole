@@ -131,10 +131,10 @@ namespace AnimateTheConsole
             windowHeight = Console.LargestWindowHeight;
 
 
-            string name = "CreationOfAdam";
-            string imagesFolderPath = @"..\..\..\data\images\" + name;
-            string outputFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
-            string asciiFolderPath = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
+            string name = "SixOfCrows";
+            string imagesFolderPath = @"data\images\" + name;
+            string outputFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
+            string asciiFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
 
             ColorMask adamMask = MakeColorMask(48.0F, 360.0F, 0.0F, 0.12F);
 
@@ -145,7 +145,7 @@ namespace AnimateTheConsole
             BrightnessSettings defaultSettings = MakeBrightnessSetting(.20F, .40F, .60F, .80F);
             BrightnessSettings negativeSettings = MakeBrightnessSetting(.90F, .15F, .10F, .05F, true);
 
-            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, adamSettings, adamMask, true);
+            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings, default, true);
 
             //ReadAsciiFromFolder(asciiFolderPath);
 
@@ -160,33 +160,31 @@ namespace AnimateTheConsole
             Console.ReadKey(true);
             Console.Clear();
             name = "Hades";
-            path = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
+            path = @"data\image-to-ascii-output\" + name + "Frames";
             ReadAsciiFromFolder(path);
 
             Console.Write("Shading and Anti Aliasing at Lower Brightness Example : Six Of Crows Animation");
             Console.ReadKey(true);
             Console.Clear();
             name = "SixOfCrows";
-            path = @"..\..\..\data\image-to-ascii-output\" + name + "Frames";
+            path = @"data\image-to-ascii-output\" + name + "Frames";
             ReadAsciiFromFolder(path);
         }
 
         private static void ReadAsciiFromFolder(string asciiFolderPath, bool isDrawingWhite = true)
         {
-            float asciiWidth = 0;
-            float asciiHeight = 0;
+            int asciiWidth = 0;
+            int asciiHeight = 0;
             List<string> asciiFileList = new List<string>();
             List<string> frames = new List<string>();
             asciiFileList.AddRange(Directory.GetFiles(asciiFolderPath, "*.txt"));
 
             foreach (string filePath in asciiFileList)
             {
-                string toAdd = "";
                 using (StreamReader sr = new StreamReader(filePath))
                 {
-                    toAdd += sr.ReadToEnd().Replace(splitString, "\n"); 
+                    frames.Add(sr.ReadToEnd()); 
                 }
-                frames.Add(toAdd);
             }
             asciiWidth = frames[0].Split("\n")[0].Length;
             asciiHeight = frames[0].Split("\n").Length;
@@ -201,10 +199,17 @@ namespace AnimateTheConsole
             if (asciiWidth > Console.LargestWindowWidth) { SetFontSize((short)(fontWidth * 2)); }
            
             Console.SetBufferSize(Console.WindowLeft + Console.LargestWindowWidth, Console.WindowTop + Console.LargestWindowHeight);
+            int widthBuffer = Console.LargestWindowWidth - asciiWidth;
+            int heightBuffer = Console.LargestWindowHeight - asciiHeight;
 
             foreach (string frame in frames)
             {
-                Console.Write(frame);
+                Console.SetCursorPosition(0, heightBuffer / 2);
+                foreach(string line in frame.Split("\n"))
+                {
+                    Console.WriteLine(new string(' ', widthBuffer/2) + line);
+                }
+                //Console.Write(frame);
                 if (Console.KeyAvailable)
                 {
                     Console.ReadKey(true);
@@ -215,8 +220,9 @@ namespace AnimateTheConsole
                 {
                     Console.ReadKey(true);
                 }
-                Console.SetCursorPosition(0, 0);
+                //Console.SetCursorPosition(0, 0);
             }
+            Console.Clear();
             SetFontSize(FontSizeDefault);
             Console.SetBufferSize(Console.WindowLeft + Console.LargestWindowWidth, Console.WindowTop + Console.LargestWindowHeight);
         }
@@ -301,55 +307,13 @@ namespace AnimateTheConsole
                     }
                     placeLimit *= 10;
                 }
-
+                Console.SetCursorPosition(0, 0);
                 Console.WriteLine($"{displayZeroes}{count} / {fileCount}");
             }
-        }
-        private static string ConvertImageToAsciiShading(string imageFile, BrightnessSettings bs)
-        {
-            string imageText = "";
-            Image image = Image.FromFile(imageFile);
-            Bitmap bm = new Bitmap(image, windowWidth, windowHeight);
-            for (int y = 0; y < windowHeight; y++)
-            {
-
-                if (y > 0) { imageText += splitString; }
-                for (int x = 0; x < windowWidth; x++)
-                {
-                    Color thisPixel = bm.GetPixel(x, y);
-                    float brightness = thisPixel.GetBrightness();
-                    if (brightness <= bs.BlankThreshold)
-                    {
-                        imageText += " ";
-                    }
-                    else if (brightness <= bs.LightThreshold)
-                    {
-                        //imageText += extraChars["LIGHTSHADE"];
-                        imageText += ".";
-                    }
-                    else if (brightness <= bs.MediumThreshold)
-                    {
-                        //imageText += extraChars["MEDIUMSHADE"];
-                        imageText += ":";
-                    }
-                    else if (brightness <= bs.DarkThreshold)
-                    {
-                        //imageText += extraChars["DARKSHADE"];
-                        imageText += "+";
-                    }
-                    else
-                    {
-                        //imageText += extraChars["FULLBLOCK"];
-                        imageText += "8";
-                    }
-                }
-            }
-            return imageText;
         }
         private static string ConvertImageToAscii(string imageFile, BrightnessSettings bs, ColorMask cm, bool keepBaseDimensions = false)
         {
             string imageText = "";
-            //Image image = Image.FromFile(imageFile);
             Bitmap bm = new Bitmap(imageFile);
 
             if (keepBaseDimensions)
