@@ -14,11 +14,11 @@ namespace AnimateTheConsole.Core
         public Vector2 TopLeftPixel { get; private set; }
         public Vector2 BottomRightPixel { get; private set; }
 
-        public int GridWidth { get => (int)(BottomRightPixel.X - TopLeftPixel.X); }
-        public int GridHeight { get => (int)(BottomRightPixel.Y - TopLeftPixel.Y); }
+        public int GridWidth { get => (int)(BottomRightPixel.X + 1 - TopLeftPixel.X); }
+        public int GridHeight { get => (int)(BottomRightPixel.Y + 1 - TopLeftPixel.Y); }
 
-        public int PixelCount { get => GridWidth * GridHeight; }
-        public int PixelPerQuad { get => PixelCount / 4; }
+        public float PixelCount { get => GridWidth * GridHeight; }
+        public float PixelPerQuad { get => PixelCount / 4; }
 
         public float AverageBrightness { get => (TopLeftQuad + TopRightQuad + BottomLeftQuad + BottomRightQuad) / 4; }
 
@@ -35,34 +35,34 @@ namespace AnimateTheConsole.Core
 
         public void AverageQuadrants()
         {
-            if (GridWidth % 2 == 0 && GridHeight % 2 == 0)
-            {
+            //if (GridWidth % 2 == 0 && GridHeight % 2 == 0)
+            //{
                 TopLeftQuad /= PixelPerQuad;
                 TopRightQuad /= PixelPerQuad;
                 BottomLeftQuad /= PixelPerQuad;
                 BottomRightQuad /= PixelPerQuad;
-            }
-            else if(GridWidth % 2 != 0)
-            {
-                TopLeftQuad /= PixelPerQuad;
-                TopRightQuad /= PixelPerQuad + GridHeight/2;
-                BottomLeftQuad /= PixelPerQuad;
-                BottomRightQuad /= PixelPerQuad + GridHeight/2;
-            }
-            else if(GridHeight % 2 != 0)
-            {
-                TopLeftQuad /= PixelPerQuad;
-                TopRightQuad /= PixelPerQuad;
-                BottomLeftQuad /= PixelPerQuad + GridWidth/2;
-                BottomRightQuad /= PixelPerQuad + GridWidth/2;
-            }
-            else
-            {
-                TopLeftQuad /= PixelPerQuad;
-                TopRightQuad /= (PixelPerQuad + GridHeight / 2);
-                BottomLeftQuad /= (PixelPerQuad + GridWidth / 2);
-                BottomRightQuad /= (PixelPerQuad + GridHeight / 2 + GridWidth / 2 + 1);
-            }
+            //}
+            //else if(GridWidth % 2 != 0)
+            //{
+            //    TopLeftQuad /= PixelPerQuad;
+            //    TopRightQuad /= PixelPerQuad + GridHeight/2;
+            //    BottomLeftQuad /= PixelPerQuad;
+            //    BottomRightQuad /= PixelPerQuad + GridHeight/2;
+            //}
+            //else if(GridHeight % 2 != 0)
+            //{
+            //    TopLeftQuad /= PixelPerQuad;
+            //    TopRightQuad /= PixelPerQuad;
+            //    BottomLeftQuad /= PixelPerQuad + GridWidth/2;
+            //    BottomRightQuad /= PixelPerQuad + GridWidth/2;
+            //}
+            //else
+            //{
+            //    TopLeftQuad /= PixelPerQuad;
+            //    TopRightQuad /= (PixelPerQuad + GridHeight / 2);
+            //    BottomLeftQuad /= (PixelPerQuad + GridWidth / 2);
+            //    BottomRightQuad /= (PixelPerQuad + GridHeight / 2 + GridWidth / 2 + 1);
+            //}
         }
 
         public void AddPixel(Bitmap bm, Program.ColorMask cm, int xPos, int yPos)
@@ -75,22 +75,22 @@ namespace AnimateTheConsole.Core
                 brightness = 0F;
             }
 
-            if (xPos <= GridWidth / 2 && yPos <= GridHeight / 2)
+            if (xPos <= TopLeftPixel.X + GridWidth / 2 && yPos <= BottomRightPixel.Y - GridHeight / 2)
             {
                 //top left
                 TopLeftQuad += brightness;
             }
-            if (xPos > GridWidth / 2 && yPos <= GridHeight / 2)
+            if (xPos > TopLeftPixel.X + GridWidth / 2 && yPos <= BottomRightPixel.Y - GridHeight / 2)
             {
                 //top right
                 TopRightQuad += brightness;
             }
-            if (xPos > GridWidth / 2 && yPos > GridHeight / 2)
+            if (xPos > TopLeftPixel.X + GridWidth / 2 && yPos > BottomRightPixel.Y - GridHeight / 2)
             {
                 //bottom right
                 BottomRightQuad += brightness;
             }
-            if (xPos <= GridWidth / 2 && yPos > GridHeight / 2)
+            if (xPos <= TopLeftPixel.X + GridWidth / 2 && yPos > BottomRightPixel.Y - GridHeight / 2)
             {
                 //bottom left
                 BottomLeftQuad += brightness;

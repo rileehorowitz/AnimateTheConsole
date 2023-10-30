@@ -125,7 +125,7 @@ namespace AnimateTheConsole
             windowHeight = Console.LargestWindowHeight;
             
 
-            string name = "Coins";
+            string name = "SixOfCrows";
             string imagesFolderPath = @"data\images\" + name;
             string outputFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
             string asciiFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
@@ -138,7 +138,7 @@ namespace AnimateTheConsole
             BrightnessSettings coinSettings = MakeBrightnessSetting(.10F, .20F, .45F, .65F);
             BrightnessSettings defaultSettings = MakeBrightnessSetting(.20F, .40F, .60F, .80F);
 
-            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, coinSettings, default, true);
+            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings, default, true);
 
             AsciiDisplay.DisplayAscii(asciiFolderPath, splitString);
 
@@ -253,7 +253,6 @@ namespace AnimateTheConsole
             //Inside the entire image
             for (int y = 0; y < bm.Height - pixelGridHeight; y += pixelGridHeight + addedHeightPixel)
             {
-
                 if (heightCount < gridsToAddHeightPixel)
                 {
                     addedHeightPixel = 1;
@@ -292,10 +291,7 @@ namespace AnimateTheConsole
 
                     currentGridWidth = pixelGridWidth + addedWidthPixel;
 
-                    PixelGrid grid = new PixelGrid(x, y, x + currentGridWidth, y + currentGridHeight);
-
-                    //number of pixels in this quadrant
-                    int pixelQuadrantCount = currentGridWidth * currentGridHeight / 4;
+                    PixelGrid grid = new PixelGrid(x, y, x + currentGridWidth-1, y + currentGridHeight-1);
 
                     //Inside a single pixelGrid
                     for (int i = 0; i < currentGridWidth; i++)
@@ -334,17 +330,10 @@ namespace AnimateTheConsole
                         }
                     }
 
-                    //average brightness of each quadrant
-                    topLeftQuadrant /= pixelQuadrantCount;
-                    topRightQuadrant /= pixelQuadrantCount;
-                    bottomLeftQuadrant /= pixelQuadrantCount;
-                    bottomRightQuadrant /= pixelQuadrantCount;
-
                     grid.AverageQuadrants();
 
                     //average brightness of entire grid
                     float gridAverageBrightness = grid.AverageBrightness;
-
 
                     Dictionary<string, string> chars;
 
@@ -457,15 +446,15 @@ namespace AnimateTheConsole
 
                 if (xPos == gridList[key].BottomRightPixel.X && yPos == gridList[key].BottomRightPixel.Y)
                 {
-                    gridList[key].AverageQuadrants();
-                    float gridAverageBrightness = gridList[key].AverageBrightness;
-                    Dictionary<string, string> chars;
-                    float threshold;
-
                     if (key % windowWidth == 0 && key != 0)
                     {
                         imageText += "\n";
                     }
+
+                    gridList[key].AverageQuadrants();
+                    float gridAverageBrightness = gridList[key].AverageBrightness;
+                    Dictionary<string, string> chars;
+                    float threshold;
 
                     if (gridAverageBrightness <= bs.BlankThreshold)
                     {
