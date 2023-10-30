@@ -7,6 +7,8 @@ using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Numerics;
+using AnimateTheConsole.Core;
+using AnimateTheConsole.FileIO;
 
 namespace AnimateTheConsole
 {
@@ -49,11 +51,9 @@ namespace AnimateTheConsole
         private static int windowWidth;
         private static int windowHeight;
         private static string splitString = "|";
-        private static Vector2 screenWidthHeight;
-        private const int FontSizeDefault = 21;
         private static Dictionary<string, string> FullValues = new Dictionary<string, string>()
         {
-            {"FILL", "8" },
+            {"FILL", "8H@$0" },
             {"TOP", "*" },
             {"BOTTOM", "s" },
             {"LEFT", ")" },
@@ -69,7 +69,7 @@ namespace AnimateTheConsole
         };
         private static Dictionary<string, string> DarkValues = new Dictionary<string, string>() 
         {
-            {"FILL", "O" },
+            {"FILL", "OI/\\" },
             {"TOP", "\"" },
             {"BOTTOM", "o" },
             {"LEFT", "}" },
@@ -85,7 +85,7 @@ namespace AnimateTheConsole
         };
         private static Dictionary<string, string> MediumValues = new Dictionary<string, string>()
         {
-            {"FILL", "!" },
+            {"FILL", "!\\/" },
             {"TOP", "\"" },
             {"BOTTOM", "+" },
             {"LEFT", "]" },
@@ -101,7 +101,7 @@ namespace AnimateTheConsole
         };
         private static Dictionary<string, string> LightValues = new Dictionary<string, string>() 
         {
-            {"FILL", ":" },
+            {"FILL", ":.^" },
             {"TOP", "\"" },
             {"BOTTOM", ":" },
             {"LEFT", "!" },
@@ -116,22 +116,16 @@ namespace AnimateTheConsole
             {"BOTTOMRIGHT", "," }
         };
 
+
         
         private static void Main(string[] args)
         {
-            //TestCode.ConsoleBufferExample();
-
-            screenWidthHeight = SetTerminalFullScreen();
             Console.CursorVisible = false;
-            SetFontSize(21);
-            //Console.SetWindowPosition(0, 0);
-
-            int test1 = Console.BufferWidth + Console.BufferHeight;
             windowWidth = Console.LargestWindowWidth;
             windowHeight = Console.LargestWindowHeight;
+            
 
-
-            string name = "SixOfCrows";
+            string name = "Coins";
             string imagesFolderPath = @"data\images\" + name;
             string outputFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
             string asciiFolderPath = @"data\image-to-ascii-output\" + name + "Frames";
@@ -143,17 +137,17 @@ namespace AnimateTheConsole
             BrightnessSettings adamSettings = MakeBrightnessSetting(.42F, .55F, .70F, .85F);
             BrightnessSettings coinSettings = MakeBrightnessSetting(.10F, .20F, .45F, .65F);
             BrightnessSettings defaultSettings = MakeBrightnessSetting(.20F, .40F, .60F, .80F);
-            BrightnessSettings negativeSettings = MakeBrightnessSetting(.90F, .15F, .10F, .05F, true);
 
-            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings, default, true);
+            //ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, coinSettings, default, true);
 
-            //ReadAsciiFromFolder(asciiFolderPath);
+            AsciiDisplay.DisplayAscii(asciiFolderPath, splitString);
 
-            ShowExample();
+            //ShowExample();
         }
 
-        private static void ShowExample()
+        public static void ShowExample()
         {
+            List<string> frames = new List<string>();
             string name = "";
             string path = "";
             Console.Write("Shading and Anti Aliasing at Higher Brightness Example : Hades Animation");
@@ -161,70 +155,14 @@ namespace AnimateTheConsole
             Console.Clear();
             name = "Hades";
             path = @"data\image-to-ascii-output\" + name + "Frames";
-            ReadAsciiFromFolder(path);
+            AsciiDisplay.DisplayAscii(path, splitString);
 
             Console.Write("Shading and Anti Aliasing at Lower Brightness Example : Six Of Crows Animation");
             Console.ReadKey(true);
             Console.Clear();
             name = "SixOfCrows";
             path = @"data\image-to-ascii-output\" + name + "Frames";
-            ReadAsciiFromFolder(path);
-        }
-
-        private static void ReadAsciiFromFolder(string asciiFolderPath, bool isDrawingWhite = true)
-        {
-            int asciiWidth = 0;
-            int asciiHeight = 0;
-            List<string> asciiFileList = new List<string>();
-            List<string> frames = new List<string>();
-            asciiFileList.AddRange(Directory.GetFiles(asciiFolderPath, "*.txt"));
-
-            foreach (string filePath in asciiFileList)
-            {
-                using (StreamReader sr = new StreamReader(filePath))
-                {
-                    frames.Add(sr.ReadToEnd()); 
-                }
-            }
-            asciiWidth = frames[0].Split("\n")[0].Length;
-            asciiHeight = frames[0].Split("\n").Length;
-
-            //We need to set the font size first, depending on the height and width of the ascii image, then alter the buffer size to fit.
-            //Font size needs to be determined via a relationship between height and width of ascii image and screen resolution
-            //(reverse engineer how LargestWindowHeight and Width are calculated)
-            int fontHeight = (int)((screenWidthHeight.Y / asciiHeight) % 1 == 0? screenWidthHeight.Y / asciiHeight : screenWidthHeight.Y / asciiHeight - 1);
-            int fontWidth = (int)((screenWidthHeight.X / asciiWidth) % 1 == 0? screenWidthHeight.X / asciiWidth : screenWidthHeight.X / asciiWidth - 1);
-            SetFontSize((short)fontHeight);
-
-            if (asciiWidth > Console.LargestWindowWidth) { SetFontSize((short)(fontWidth * 2)); }
-           
-            Console.SetBufferSize(Console.WindowLeft + Console.LargestWindowWidth, Console.WindowTop + Console.LargestWindowHeight);
-            int widthBuffer = Console.LargestWindowWidth - asciiWidth;
-            int heightBuffer = Console.LargestWindowHeight - asciiHeight;
-
-            foreach (string frame in frames)
-            {
-                Console.SetCursorPosition(0, heightBuffer / 2);
-                foreach(string line in frame.Split("\n"))
-                {
-                    Console.WriteLine(new string(' ', widthBuffer/2) + line);
-                }
-                //Console.Write(frame);
-                if (Console.KeyAvailable)
-                {
-                    Console.ReadKey(true);
-                    Console.ReadKey(true);
-                }
-                Thread.Sleep(50);
-                if(asciiFileList.Count <= 1)
-                {
-                    Console.ReadKey(true);
-                }
-                //Console.SetCursorPosition(0, 0);
-            }
-            Console.Clear();
-            SetFontSize(FontSizeDefault);
-            Console.SetBufferSize(Console.WindowLeft + Console.LargestWindowWidth, Console.WindowTop + Console.LargestWindowHeight);
+            AsciiDisplay.DisplayAscii(path, splitString);
         }
 
         struct BrightnessSettings
@@ -233,23 +171,21 @@ namespace AnimateTheConsole
             public float LightThreshold;
             public float MediumThreshold;
             public float DarkThreshold;
-            public bool isPhotoNegative;
         }
-        struct ColorMask
+        public struct ColorMask
         {
             public float HueMin;
             public float HueMax;
             public float SaturationMin;
             public float SaturationsMax;
         }
-        private static BrightnessSettings MakeBrightnessSetting(float blank, float light, float medium, float dark, bool isPhotoNegative = false)
+        private static BrightnessSettings MakeBrightnessSetting(float blank, float light, float medium, float dark)
         {
             BrightnessSettings bs = new BrightnessSettings();
             bs.BlankThreshold = blank;
             bs.LightThreshold = light;
             bs.MediumThreshold = medium;
             bs.DarkThreshold = dark;
-            bs.isPhotoNegative = isPhotoNegative;
             return bs;
         }
         private static ColorMask MakeColorMask(float hueMin, float hueMax, float saturationMin, float saturationMax)
@@ -263,63 +199,25 @@ namespace AnimateTheConsole
         }
         private static void ConvertImagesToAscii(string imagesFolderPath, string outputFolderPath, string name, BrightnessSettings bs, ColorMask cm = new ColorMask(), bool keepBaseDimensions = false)
         {
-            int count = 0;
-            int placeLimit = 10;
-            string displayZeroes = "";
-            List<string> imageFileArray = new List<string>();
-            string[] foldersInImagePath = Directory.GetDirectories(imagesFolderPath);
-            
-            if (!Directory.Exists(outputFolderPath))
+            List<Bitmap> images = AsciiFileIO.LoadImages(imagesFolderPath, name);
+            string imageText = "";
+            AsciiDisplay.ResetDisplayCount(images.Count.ToString().Length);
+            foreach (Bitmap image in images)
             {
-                Directory.CreateDirectory(outputFolderPath);
+                imageText += TestConvertImageToAscii(image, bs, cm, keepBaseDimensions) + splitString;
+                AsciiDisplay.IncrementDisplayCount("Converting Images", images.Count);
             }
 
-            for (int i = 0; i < foldersInImagePath.Length; i++)
-            {
-                imageFileArray.AddRange(Directory.GetFiles($"{foldersInImagePath[i]}", "*.jpg"));
-            }
-
-            //find the decimal place of frames we're working with and modify displayZeroes accordingly
-            string fileCount = imageFileArray.Count.ToString();
-            for (int i = 0; i < fileCount.Length - 1; i++)
-            {
-                displayZeroes += "0";
-            }
-            
-
-            foreach (string imageFile in imageFileArray)
-            {
-
-                string imageText = ConvertImageToAscii(imageFile, bs, cm, keepBaseDimensions);
-
-                string outputFilePath = Path.Combine(outputFolderPath, $"{name}{displayZeroes}{count}.txt");
-
-                using (StreamWriter sw = new StreamWriter(outputFilePath))
-                {
-                    sw.WriteLine(imageText);
-                }
-
-                count++;
-                if (!(count < placeLimit))
-                {
-                    if (displayZeroes.Length > 0) {
-                        displayZeroes = displayZeroes.Substring(0,displayZeroes.Length-1);
-                    }
-                    placeLimit *= 10;
-                }
-                Console.SetCursorPosition(0, 0);
-                Console.WriteLine($"{displayZeroes}{count} / {fileCount}");
-            }
+            AsciiFileIO.WriteAsciiToFile(outputFolderPath, name, imageText);
         }
-        private static string ConvertImageToAscii(string imageFile, BrightnessSettings bs, ColorMask cm, bool keepBaseDimensions = false)
+        private static string ConvertImageToAscii(Bitmap bm, BrightnessSettings bs, ColorMask cm, bool keepBaseDimensions = false)
         {
             string imageText = "";
-            Bitmap bm = new Bitmap(imageFile);
 
             if (keepBaseDimensions)
             {
-                windowHeight = bm.Height / 8 ;
                 windowWidth = bm.Width / 4 ;
+                windowHeight = bm.Height / 8 ;
             }
 
             //base height and width in pixels of a given pixel grid
@@ -332,19 +230,15 @@ namespace AnimateTheConsole
 
             int widthDenominator = FindCommonDenominator(pixelWidthRemainder, windowWidth - pixelWidthRemainder);
             int gridsToAddWidthPixel = pixelWidthRemainder / widthDenominator;
-            int gridsNotToAddWidthPixel = (windowWidth - pixelWidthRemainder) / widthDenominator;
+            int gridsInWidthSet = ((windowWidth - pixelWidthRemainder) / widthDenominator) / pixelGridWidth;
             int addedWidthPixel = 1;
             int widthCount = 0;
             
             int heightDenominator = FindCommonDenominator(pixelHeightRemainder, windowHeight - pixelHeightRemainder);
             int gridsToAddHeightPixel = pixelHeightRemainder / heightDenominator;
-            int gridsNotToAddHeightPixel = (windowHeight - pixelHeightRemainder) / heightDenominator;
+            int gridsInHeightSet = ((windowHeight - pixelHeightRemainder) / heightDenominator) / pixelGridHeight;
             int addedHeightPixel = 1;
             int heightCount = 0;
-
-
-            float remainderWidthCheck = 0.0F;
-            float remainderHeightCheck = 0.0F;
 
             //set quadrant brightness averages starting at 0
             float topLeftQuadrant = 0F;
@@ -357,7 +251,7 @@ namespace AnimateTheConsole
             int currentGridHeight = pixelGridHeight;
 
             //Inside the entire image
-            for (int y = 0; y < bm.Height - pixelGridHeight + (int)remainderHeightCheck; y += pixelGridHeight + addedHeightPixel)
+            for (int y = 0; y < bm.Height - pixelGridHeight; y += pixelGridHeight + addedHeightPixel)
             {
 
                 if (heightCount < gridsToAddHeightPixel)
@@ -365,12 +259,12 @@ namespace AnimateTheConsole
                     addedHeightPixel = 1;
                     heightCount++;
                 }
-                else if (heightCount < gridsToAddHeightPixel + gridsNotToAddHeightPixel)
+                else if (heightCount < gridsInHeightSet)
                 {
                     addedHeightPixel = 0;
                     heightCount++;
                 }
-                if (heightCount >= gridsToAddHeightPixel + gridsNotToAddHeightPixel)
+                if (heightCount >= gridsInHeightSet)
                 {
                     heightCount = 0;
                 }
@@ -378,7 +272,7 @@ namespace AnimateTheConsole
 
                 if (y > 0) { imageText += '\n'; }
 
-                for (int x = 0; x < bm.Width - pixelGridWidth + (int)remainderWidthCheck; x += pixelGridWidth + addedWidthPixel)
+                for (int x = 0; x < bm.Width - pixelGridWidth; x += pixelGridWidth + addedWidthPixel)
                 {
                     
                     if(widthCount < gridsToAddWidthPixel)
@@ -386,17 +280,19 @@ namespace AnimateTheConsole
                         addedWidthPixel = 1;
                         widthCount++;
                     }
-                    else if(widthCount < gridsToAddWidthPixel + gridsNotToAddWidthPixel)
+                    else if(widthCount < gridsInWidthSet)
                     {
                         addedWidthPixel = 0;
                         widthCount++;
                     }
-                    if (widthCount >= gridsToAddWidthPixel + gridsNotToAddWidthPixel)
+                    if (widthCount >= gridsInWidthSet)
                     {
                         widthCount = 0;
                     }
 
                     currentGridWidth = pixelGridWidth + addedWidthPixel;
+
+                    PixelGrid grid = new PixelGrid(x, y, x + currentGridWidth, y + currentGridHeight);
 
                     //number of pixels in this quadrant
                     int pixelQuadrantCount = currentGridWidth * currentGridHeight / 4;
@@ -418,32 +314,24 @@ namespace AnimateTheConsole
                             if (i <= currentGridWidth / 2 && j <= currentGridHeight / 2)
                             {
                                 //top left
-                                topLeftQuadrant += brightness;
+                                grid.TopLeftQuad += brightness;
                             }
                             if (i > currentGridWidth / 2 && j <= currentGridHeight / 2)
                             {
                                 //top right
-                                topRightQuadrant += brightness;
+                                grid.TopRightQuad += brightness;
                             }
                             if (i > currentGridWidth / 2 && j > currentGridHeight / 2)
                             {
                                 //bottom right
-                                bottomRightQuadrant += brightness;
+                                grid.BottomRightQuad += brightness;
                             }
                             if (i <= currentGridWidth / 2 && j > currentGridHeight / 2)
                             {
                                 //bottom left
-                                bottomLeftQuadrant += brightness;
+                                grid.BottomLeftQuad += brightness;
                             }
                         }
-                    }
-                    if (remainderWidthCheck > 1.0F)
-                    {
-                        remainderWidthCheck -= 1.0f;
-                    }
-                    if (remainderHeightCheck > 1.0F)
-                    {
-                        remainderHeightCheck -= 1.0f;
                     }
 
                     //average brightness of each quadrant
@@ -452,74 +340,48 @@ namespace AnimateTheConsole
                     bottomLeftQuadrant /= pixelQuadrantCount;
                     bottomRightQuadrant /= pixelQuadrantCount;
 
+                    grid.AverageQuadrants();
+
                     //average brightness of entire grid
-                    float gridAverageBrightness = (topLeftQuadrant + topRightQuadrant + bottomLeftQuadrant + bottomRightQuadrant) / 4.0F;
+                    float gridAverageBrightness = grid.AverageBrightness;
 
 
                     Dictionary<string, string> chars;
 
                     float threshold;
-                    if (bs.isPhotoNegative)
+
+
+                    if (gridAverageBrightness <= bs.BlankThreshold)
                     {
-                        if (gridAverageBrightness >= bs.DarkThreshold)
-                        {
-                            imageText += " ";
-                            continue;
-                        }
-                        else if (gridAverageBrightness >= bs.MediumThreshold)
-                        {
-                            threshold = bs.BlankThreshold;
-                            chars = LightValues;
-                        }
-                        else if (gridAverageBrightness >= bs.LightThreshold)
-                        {
-                            threshold = bs.LightThreshold;
-                            chars = MediumValues;
-                        }
-                        else if (gridAverageBrightness >= bs.BlankThreshold)
-                        {
-                            threshold = bs.MediumThreshold;
-                            chars = DarkValues;
-                        }
-                        else
-                        {
-                            threshold = bs.DarkThreshold;
-                            chars = FullValues;
-                        }
+                        imageText += " ";
+                        continue;
+                    }
+                    else if (gridAverageBrightness <= bs.LightThreshold)
+                    {
+                        threshold = bs.BlankThreshold;
+                        chars = LightValues;
+                    }
+                    else if (gridAverageBrightness <= bs.MediumThreshold)
+                    {
+                        threshold = bs.LightThreshold;
+                        chars = MediumValues;
+                    }
+                    else if (gridAverageBrightness <= bs.DarkThreshold)
+                    {
+                        threshold = bs.MediumThreshold;
+                        chars = DarkValues;
                     }
                     else
                     {
-                        if (gridAverageBrightness <= bs.BlankThreshold)
-                        {
-                            imageText += " ";
-                            continue;
-                        }
-                        else if (gridAverageBrightness <= bs.LightThreshold)
-                        {
-                            threshold = bs.BlankThreshold;
-                            chars = LightValues;
-                        }
-                        else if (gridAverageBrightness <= bs.MediumThreshold)
-                        {
-                            threshold = bs.LightThreshold;
-                            chars = MediumValues;
-                        }
-                        else if (gridAverageBrightness <= bs.DarkThreshold)
-                        {
-                            threshold = bs.MediumThreshold;
-                            chars = DarkValues;
-                        }
-                        else
-                        {
-                            threshold = bs.DarkThreshold;
-                            chars = FullValues;
-                        }
+                        threshold = bs.DarkThreshold;
+                        chars = FullValues;
                     }
-                   
-                    bool topLeft = topLeftQuadrant > threshold;
-                    bool bottomLeft = bottomLeftQuadrant > threshold;
-                    bool topRight = topRightQuadrant > threshold;
-                    bool bottomRight = bottomRightQuadrant > threshold;
+
+
+                    bool topLeft = grid.TopLeftQuad > threshold;
+                    bool bottomLeft = grid.BottomLeftQuad > threshold;
+                    bool topRight = grid.TopRightQuad > threshold;
+                    bool bottomRight = grid.BottomRightQuad > threshold;
 
                     if (!topLeft && !topRight && bottomLeft && bottomRight)
                     {
@@ -563,7 +425,121 @@ namespace AnimateTheConsole
                     }
                     else
                     {
-                        imageText += chars["FILL"];
+                        imageText += chars["FILL"].Substring(new Random().Next(0, chars["FILL"].Length - 1),1);
+                    }
+                }
+            }
+            return imageText;
+        }
+        private static string TestConvertImageToAscii(Bitmap bm, BrightnessSettings bs, ColorMask cm, bool keepBaseDimensions = false)
+        {
+            string imageText = "";
+            List<PixelGrid> gridList = new List<PixelGrid>();
+            if (keepBaseDimensions)
+            {
+                windowWidth = bm.Width / 4 ;
+                windowHeight = bm.Height / 8 ;
+            }
+            //base height and width in pixels of a given pixel grid
+            int pixelGridWidth = (bm.Width / windowWidth);
+            int pixelGridHeight = (bm.Height / windowHeight);
+            for(int i = 0; i < bm.Width * bm.Height; i++) //run through every pixel
+            {
+                int xPos = i % bm.Width;
+                int yPos = i / bm.Width;
+                int key = (yPos / pixelGridHeight) * (windowWidth) + (xPos / pixelGridWidth);
+                if (gridList.Count <= key)
+                {
+                    gridList.Add(new PixelGrid(xPos, yPos, xPos + pixelGridWidth-1, yPos + pixelGridHeight-1));
+                }
+                gridList[key].AddPixel(bm, cm, xPos, yPos);
+
+
+                if (xPos == gridList[key].BottomRightPixel.X && yPos == gridList[key].BottomRightPixel.Y)
+                {
+                    gridList[key].AverageQuadrants();
+                    float gridAverageBrightness = gridList[key].AverageBrightness;
+                    Dictionary<string, string> chars;
+                    float threshold;
+
+                    if (key % windowWidth == 0 && key != 0)
+                    {
+                        imageText += "\n";
+                    }
+
+                    if (gridAverageBrightness <= bs.BlankThreshold)
+                    {
+                        imageText += " ";
+                        continue;
+                    }
+                    else if (gridAverageBrightness <= bs.LightThreshold)
+                    {
+                        threshold = bs.BlankThreshold;
+                        chars = LightValues;
+                    }
+                    else if (gridAverageBrightness <= bs.MediumThreshold)
+                    {
+                        threshold = bs.LightThreshold;
+                        chars = MediumValues;
+                    }
+                    else if (gridAverageBrightness <= bs.DarkThreshold)
+                    {
+                        threshold = bs.MediumThreshold;
+                        chars = DarkValues;
+                    }
+                    else
+                    {
+                        threshold = bs.DarkThreshold;
+                        chars = FullValues;
+                    }
+                    bool topLeft = gridList[key].TopLeftQuad > threshold;
+                    bool bottomLeft = gridList[key].BottomLeftQuad > threshold;
+                    bool topRight = gridList[key].TopRightQuad > threshold;
+                    bool bottomRight = gridList[key].BottomRightQuad > threshold;
+
+                    if (!topLeft && !topRight && bottomLeft && bottomRight)
+                    {
+                        imageText += chars["BOTTOM"];
+                    }
+                    else if (topLeft && !topRight && !bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["TOPLEFT"];
+                    }
+                    else if (!topLeft && topRight && !bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["TOPRIGHT"];
+                    }
+                    else if (topLeft && topRight && !bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["TOP"];
+                    }
+                    else if (!topLeft && !topRight && bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["BOTTOMLEFT"];
+                    }
+                    else if (!topLeft && !topRight && !bottomLeft && bottomRight)
+                    {
+                        imageText += chars["BOTTOMRIGHT"];
+                    }
+                    else if (topLeft && !topRight && bottomLeft && bottomRight)
+                    {
+                        imageText += chars["UPLEFT"]; ;
+                    }
+                    else if (!topLeft && topRight && bottomLeft && bottomRight)
+                    {
+                        imageText += chars["UPRIGHT"];
+                    }
+                    else if (topLeft && topRight && !bottomLeft && bottomRight)
+                    {
+                        imageText += chars["DOWNRIGHT"];
+                    }
+                    else if (topLeft && topRight && bottomLeft && !bottomRight)
+                    {
+                        imageText += chars["DOWNLEFT"];
+                    }
+                    else
+                    {
+                        imageText += chars["FILL"].Substring(new Random().Next(0, chars["FILL"].Length - 1), 1);
                     }
                 }
             }
@@ -603,97 +579,7 @@ namespace AnimateTheConsole
         }
 
 
-        //All this stuff is for font manipulation
-        private enum StdHandle
-        {
-            OutputHandle = -11
-        }
-        [StructLayout(LayoutKind.Sequential)]
-        public struct COORD
-        {
-            public short X;
-            public short Y;
 
-            public COORD(short X, short Y)
-            {
-                this.X = X;
-                this.Y = Y;
-            }
-        };
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        public struct CONSOLE_FONT_INFO_EX
-        {
-            public uint cbSize;
-            public uint nFont;
-            public COORD dwFontSize;
-            public int FontFamily;
-            public int FontWeight;
-
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] // Edit sizeconst if the font name is too big
-            public string FaceName;
-        }
-        private static void SetFontSize(short fontHeight)
-        {
-            [DllImport("kernel32")]
-            static extern IntPtr GetStdHandle(StdHandle index); 
-            IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
-            [DllImport("kernel32.dll", SetLastError = true)]
-            static extern Int32 SetCurrentConsoleFontEx(IntPtr ConsoleOutput, bool MaximumWindow, ref CONSOLE_FONT_INFO_EX ConsoleCurrentFontEx);
-            [DllImport("kernel32.dll", SetLastError = true)]
-            static extern Int32 GetCurrentConsoleFontEx(IntPtr ConsoleOutput, bool MaximumWindow, ref CONSOLE_FONT_INFO_EX ConsoleCurrentFontEx);
-            
-            // Instantiating CONSOLE_FONT_INFO_EX and setting its size (the function will fail otherwise)
-            CONSOLE_FONT_INFO_EX ConsoleFontInfo = new CONSOLE_FONT_INFO_EX();
-            ConsoleFontInfo.cbSize = (uint)Marshal.SizeOf(ConsoleFontInfo);
-
-            // Optional, implementing this will keep the fontweight and fontsize from changing
-            GetCurrentConsoleFontEx(GetStdHandle(StdHandle.OutputHandle), false, ref ConsoleFontInfo);
-
-            ConsoleFontInfo.dwFontSize.Y = fontHeight;
-
-            SetCurrentConsoleFontEx(GetStdHandle(StdHandle.OutputHandle), false, ref ConsoleFontInfo);
-
-            Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
-        }
-
-        //Method to set the terminal window to full screen
-        struct WindowDimensions
-        {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-        }  // Structure used by GetWindowRect
-        private static Vector2 SetTerminalFullScreen()
-        {
-            // Import the necessary functions from user32.dll
-            [DllImport("user32.dll")]
-            static extern IntPtr GetForegroundWindow();
-            [DllImport("user32.dll")]
-            static extern bool ShowWindow(IntPtr windowHandle, int isItShowing);
-            [DllImport("user32.dll")]
-            static extern bool GetWindowRect(IntPtr windowHandle, out WindowDimensions dimensions);
-            [DllImport("user32.dll")]
-            static extern bool MoveWindow(IntPtr windowHandle, int left, int top, int newWidth, int newHeight, bool Repaint);
-
-            // Constants for the ShowWindow function
-            const int SW_MAXIMIZE = 3;
-            // Get the handle of the console window
-            IntPtr consoleWindowHandle = GetForegroundWindow();
-            // Maximize the console window
-            ShowWindow(consoleWindowHandle, SW_MAXIMIZE);
-            // Get the screen size
-            WindowDimensions screenRect;
-            GetWindowRect(consoleWindowHandle, out screenRect);
-            // Resize and reposition the console window to fill the screen
-            int width = screenRect.Right - screenRect.Left;
-            int height = screenRect.Bottom - screenRect.Top;
-            //Sets the window to the left and top of the screen, then sets the new width and height to what was just calculated, and then says yes, recreate the window to match this information
-            
-            MoveWindow(consoleWindowHandle, screenRect.Left, screenRect.Top, width, height, true);
-
-            return new Vector2(width, height);
-        }
         //Method to convert the UTF-8 hex codes into byte arrays that can be converted into our fun characters
         public static byte[] ConvertHexStringToByteArray(string hexString)
         {
