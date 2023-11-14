@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -20,17 +21,21 @@ namespace AnimateTheConsole.Core
         private static int DisplayPlaceLimit { get; set; }
         private static string DisplayZeroes { get; set; }
 
-        public static void DisplayAscii(string asciiFolderPath, string splitString)
+        public static void DisplayAscii(AsciiFileIO fileIO, bool isFullScreen = false)
         {
-            screenWidthHeight = SetTerminalFullScreen();
-            List<string> frames = AsciiFileIO.ReadAsciiFromFolder(asciiFolderPath, splitString);
 
+            List<string> frames = fileIO.ReadAsciiFromFolder();
             int asciiWidth = frames[0].Split("\n")[0].Length;
             int asciiHeight = frames[0].Split("\n").Length;
-            DetermineFontSize(asciiWidth, asciiHeight);
-            int widthBuffer = Console.LargestWindowWidth - asciiWidth;
-            int heightBuffer = Console.LargestWindowHeight - asciiHeight;
-
+            int widthBuffer = Console.WindowWidth - asciiWidth;
+            int heightBuffer = Console.WindowHeight - asciiHeight;
+            if (isFullScreen)
+            {
+                screenWidthHeight = SetTerminalFullScreen();
+                DetermineFontSize(asciiWidth, asciiHeight);
+                widthBuffer = Console.LargestWindowWidth - asciiWidth;
+                heightBuffer = Console.LargestWindowHeight - asciiHeight;
+            }
             foreach (string frame in frames)
             {
                 Console.SetCursorPosition(0, heightBuffer / 2);
@@ -44,14 +49,13 @@ namespace AnimateTheConsole.Core
                     Console.ReadKey(true);
                 }
                 Thread.Sleep(50);
-                if (frames.Count <= 1)
-                {
-                    Console.ReadKey(true);
-                }
             }
             Console.Clear();
-            SetFontSize(FontSizeDefault);
-            Console.SetBufferSize(Console.WindowLeft + Console.LargestWindowWidth, Console.WindowTop + Console.LargestWindowHeight);
+            if (isFullScreen)
+            {
+                SetFontSize(FontSizeDefault);
+                Console.SetBufferSize(Console.WindowLeft + Console.LargestWindowWidth, Console.WindowTop + Console.LargestWindowHeight);
+            }
         }
 
         private static void DetermineFontSize(int asciiWidth, int asciiHeight)
@@ -185,6 +189,43 @@ namespace AnimateTheConsole.Core
             Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
         }
 
+        private static Dictionary<string, string> extraChars = new Dictionary<string, string>();
+        private static void GetFunChars()
+        {
+            Encoding encode = Encoding.UTF8;
+            extraChars["FULLBLOCK"] = "E29688";
+            extraChars["BOXHORIZONTAL"] = "E29590";
+            extraChars["BOXVERTICAL"] = "E29591";
+            extraChars["BOXTOPRIGHT"] = "E29597";
+            extraChars["BOXBOTTOMRIGHT"] = "E2959D";
+            extraChars["BOXTOPLEFT"] = "E29594";
+            extraChars["BOXBOTTOMLEFT"] = "E2959a";
+            extraChars["LIGHTSHADE"] = "E29691";
+            extraChars["MEDIUMSHADE"] = "E29692";
+            extraChars["DARKSHADE"] = "E29693";
+            foreach (KeyValuePair<string, string> character in extraChars)
+            {
+                byte[] byteArray = ConvertHexStringToByteArray(character.Value);
+                extraChars[character.Key] = encode.GetString(byteArray);
+            }
+        }
 
+        //Method to convert the UTF-8 hex codes into byte arrays that can be converted into our fun characters
+        public static byte[] ConvertHexStringToByteArray(string hexString)
+        {
+            // Make sure hexString is an even length
+            if (hexString.Length % 2 != 0)
+            {
+                throw new ArgumentException($"The binary key cannot have an odd number of digits: {hexString}");
+            }
+            // Every two characters in hexString must be converted into a byte and added to the byte array
+            byte[] data = new byte[hexString.Length / 2];
+            for (int index = 0; index < data.Length; index++)
+            {
+                string byteValue = hexString.Substring(index * 2, 2);
+                data[index] = byte.Parse(byteValue, NumberStyles.HexNumber);
+            }
+            return data;
+        }
     }
 }

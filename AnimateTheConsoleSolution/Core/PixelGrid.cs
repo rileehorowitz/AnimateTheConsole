@@ -11,6 +11,71 @@ namespace AnimateTheConsole.Core
 {
     public class PixelGrid
     {
+        private static Dictionary<string, string> FullValues = new Dictionary<string, string>()
+        {
+            {"FILL", "8H@$0" },
+            {"TOP", "*" },
+            {"BOTTOM", "s" },
+            {"LEFT", ")" },
+            {"RIGHT", "(" },
+            {"UPRIGHT", "P" },
+            {"UPLEFT", "Y" },
+            {"DOWNRIGHT", "b" },
+            {"DOWNLEFT", "d" },
+            {"TOPLEFT", "'" },
+            {"BOTTOMLEFT", "." },
+            {"TOPRIGHT", "`" },
+            {"BOTTOMRIGHT", "," }
+        };
+        private static Dictionary<string, string> DarkValues = new Dictionary<string, string>()
+        {
+            {"FILL", "OI/\\" },
+            {"TOP", "\"" },
+            {"BOTTOM", "o" },
+            {"LEFT", "}" },
+            {"RIGHT", "{" },
+            {"UPRIGHT", "+" },
+            {"UPLEFT", "+" },
+            {"DOWNRIGHT", "b" },
+            {"DOWNLEFT", "d" },
+            {"TOPLEFT", "'" },
+            {"BOTTOMLEFT", "." },
+            {"TOPRIGHT", "`" },
+            {"BOTTOMRIGHT", "," }
+        };
+        private static Dictionary<string, string> MediumValues = new Dictionary<string, string>()
+        {
+            {"FILL", "!\\/" },
+            {"TOP", "\"" },
+            {"BOTTOM", "+" },
+            {"LEFT", "]" },
+            {"RIGHT", "[" },
+            {"UPRIGHT", ">" },
+            {"UPLEFT", "<" },
+            {"DOWNRIGHT", ">" },
+            {"DOWNLEFT", "<" },
+            {"TOPLEFT", "'" },
+            {"BOTTOMLEFT", "." },
+            {"TOPRIGHT", "`" },
+            {"BOTTOMRIGHT", "," }
+        };
+        private static Dictionary<string, string> LightValues = new Dictionary<string, string>()
+        {
+            {"FILL", ":.^" },
+            {"TOP", "\"" },
+            {"BOTTOM", ":" },
+            {"LEFT", "!" },
+            {"RIGHT", "!" },
+            {"UPRIGHT", ";" },
+            {"UPLEFT", ":" },
+            {"DOWNRIGHT", ":" },
+            {"DOWNLEFT", ";" },
+            {"TOPLEFT", "'" },
+            {"BOTTOMLEFT", "." },
+            {"TOPRIGHT", "`" },
+            {"BOTTOMRIGHT", "," }
+        };
+
         public Vector2 TopLeftPixel { get; private set; }
         public Vector2 BottomRightPixel { get; private set; }
 
@@ -35,37 +100,37 @@ namespace AnimateTheConsole.Core
 
         public void AverageQuadrants()
         {
-            //if (GridWidth % 2 == 0 && GridHeight % 2 == 0)
-            //{
+            if (GridWidth % 2 == 0 && GridHeight % 2 == 0)
+            {
                 TopLeftQuad /= PixelPerQuad;
                 TopRightQuad /= PixelPerQuad;
                 BottomLeftQuad /= PixelPerQuad;
                 BottomRightQuad /= PixelPerQuad;
-            //}
-            //else if(GridWidth % 2 != 0)
-            //{
-            //    TopLeftQuad /= PixelPerQuad;
-            //    TopRightQuad /= PixelPerQuad + GridHeight/2;
-            //    BottomLeftQuad /= PixelPerQuad;
-            //    BottomRightQuad /= PixelPerQuad + GridHeight/2;
-            //}
-            //else if(GridHeight % 2 != 0)
-            //{
-            //    TopLeftQuad /= PixelPerQuad;
-            //    TopRightQuad /= PixelPerQuad;
-            //    BottomLeftQuad /= PixelPerQuad + GridWidth/2;
-            //    BottomRightQuad /= PixelPerQuad + GridWidth/2;
-            //}
-            //else
-            //{
-            //    TopLeftQuad /= PixelPerQuad;
-            //    TopRightQuad /= (PixelPerQuad + GridHeight / 2);
-            //    BottomLeftQuad /= (PixelPerQuad + GridWidth / 2);
-            //    BottomRightQuad /= (PixelPerQuad + GridHeight / 2 + GridWidth / 2 + 1);
-            //}
+            }
+            else if (GridWidth % 2 != 0)
+            {
+                TopLeftQuad /= PixelPerQuad;
+                TopRightQuad /= PixelPerQuad + GridHeight / 2;
+                BottomLeftQuad /= PixelPerQuad;
+                BottomRightQuad /= PixelPerQuad + GridHeight / 2;
+            }
+            else if (GridHeight % 2 != 0)
+            {
+                TopLeftQuad /= PixelPerQuad;
+                TopRightQuad /= PixelPerQuad;
+                BottomLeftQuad /= PixelPerQuad + GridWidth / 2;
+                BottomRightQuad /= PixelPerQuad + GridWidth / 2;
+            }
+            else
+            {
+                TopLeftQuad /= PixelPerQuad;
+                TopRightQuad /= (PixelPerQuad + GridHeight / 2);
+                BottomLeftQuad /= (PixelPerQuad + GridWidth / 2);
+                BottomRightQuad /= (PixelPerQuad + GridHeight / 2 + GridWidth / 2 + 1);
+            }
         }
 
-        public void AddPixel(Bitmap bm, Program.ColorMask cm, int xPos, int yPos)
+        public void AddPixel(Bitmap bm, ColorMask cm, int xPos, int yPos)
         {
             Color thisPixel = bm.GetPixel(xPos, yPos);
             float brightness = thisPixel.GetBrightness();
@@ -94,6 +159,97 @@ namespace AnimateTheConsole.Core
             {
                 //bottom left
                 BottomLeftQuad += brightness;
+            }
+        }
+
+        public float AssignValues(BrightnessSettings bs, out Dictionary<string,string> chars)
+        {
+            float threshold;
+            if (AverageBrightness <= bs.BlankThreshold)
+            {
+                threshold = 1;
+                chars = null;
+            }
+            else if (AverageBrightness <= bs.LightThreshold)
+            {
+                threshold = bs.BlankThreshold;
+                chars = LightValues;
+            }
+            else if (AverageBrightness <= bs.MediumThreshold)
+            {
+                threshold = bs.LightThreshold;
+                chars = MediumValues;
+            }
+            else if (AverageBrightness <= bs.DarkThreshold)
+            {
+                threshold = bs.MediumThreshold;
+                chars = DarkValues;
+            }
+            else
+            {
+                threshold = bs.DarkThreshold;
+                chars = FullValues;
+            }
+            return threshold;
+        }
+
+        public string AssignCharacter(BrightnessSettings bs)
+        {
+            Dictionary<string, string> chars;
+            AverageQuadrants();
+            float threshold = AssignValues(bs, out chars);
+            bool topLeft = TopLeftQuad > threshold;
+            bool bottomLeft = BottomLeftQuad > threshold;
+            bool topRight = TopRightQuad > threshold;
+            bool bottomRight = BottomRightQuad > threshold;
+
+            if(chars == null)
+            {
+                return " ";
+            }
+            else if (!topLeft && !topRight && bottomLeft && bottomRight)
+            {
+                return chars["BOTTOM"];
+            }
+            else if (topLeft && !topRight && !bottomLeft && !bottomRight)
+            {
+                return chars["TOPLEFT"];
+            }
+            else if (!topLeft && topRight && !bottomLeft && !bottomRight)
+            {
+                return chars["TOPRIGHT"];
+            }
+            else if (topLeft && topRight && !bottomLeft && !bottomRight)
+            {
+                return chars["TOP"];
+            }
+            else if (!topLeft && !topRight && bottomLeft && !bottomRight)
+            {
+                return chars["BOTTOMLEFT"];
+            }
+            else if (!topLeft && !topRight && !bottomLeft && bottomRight)
+            {
+                return chars["BOTTOMRIGHT"];
+            }
+            else if (topLeft && !topRight && bottomLeft && bottomRight)
+            {
+                return chars["UPLEFT"]; ;
+            }
+            else if (!topLeft && topRight && bottomLeft && bottomRight)
+            {
+                return chars["UPRIGHT"];
+            }
+            else if (topLeft && topRight && !bottomLeft && bottomRight)
+            {
+                return chars["DOWNRIGHT"];
+            }
+            else if (topLeft && topRight && bottomLeft && !bottomRight)
+            {
+                return chars["DOWNLEFT"];
+            }
+            else
+            {
+                return chars["FILL"].Substring(new Random().Next(0, chars["FILL"].Length - 1), 1);
             }
         }
     }
