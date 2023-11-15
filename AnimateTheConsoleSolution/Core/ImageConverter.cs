@@ -23,6 +23,7 @@ namespace AnimateTheConsole.Core
 
         public void ConvertImagesToAscii(AsciiFileIO fileIO, BrightnessSettings bs, ColorMask cm = new ColorMask(), bool keepBaseDimensions = false)
         {
+            Console.Clear();
             List<Bitmap> images = fileIO.LoadImages();
             string imageText = "";
             AsciiDisplay.ResetDisplayCount(images.Count.ToString().Length);
@@ -40,6 +41,7 @@ namespace AnimateTheConsole.Core
             }
 
             fileIO.WriteAsciiToFile(imageText);
+            Console.Clear();
         }
         private string ConvertImageToAsciiFitWindow(Bitmap bm, BrightnessSettings bs, ColorMask cm)
         {
@@ -129,7 +131,7 @@ namespace AnimateTheConsole.Core
         }
         private string ConvertImageToAsciiFitImage(Bitmap bm, BrightnessSettings bs, ColorMask cm)
         {
-            bm = new Bitmap(bm, bm.Width / 2, bm.Height / 4);
+            bm = new Bitmap(bm, bm.Width / 3, bm.Height / 6);
             WindowWidth = bm.Width / 2;
             WindowHeight = bm.Height / 2;
 

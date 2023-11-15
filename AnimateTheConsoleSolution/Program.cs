@@ -49,45 +49,13 @@ namespace AnimateTheConsole
       `'::::::;''
          `"""'
    */
-        private static string splitString = "|";
+        
         private static void Main(string[] args)
         {
-            Console.CursorVisible = false;
-            ImageConverter converter = new ImageConverter(Console.WindowWidth, Console.WindowHeight, splitString);
-            AsciiFileIO fileIO = new AsciiFileIO("SixOfCrows");
-
-            ColorMask adamMask = MakeColorMask(48.0F, 360.0F, 0.0F, 0.12F);
-
-            BrightnessSettings sixCrowSettings = MakeBrightnessSetting(.10F, .16F, .28F, .52F);
-            BrightnessSettings hadesSettings = MakeBrightnessSetting(.10F, .25F, .55F, .75F);
-            BrightnessSettings adamSettings = MakeBrightnessSetting(.42F, .55F, .70F, .85F);
-            BrightnessSettings coinSettings = MakeBrightnessSetting(.10F, .20F, .45F, .65F);
-            BrightnessSettings defaultSettings = MakeBrightnessSetting(.20F, .40F, .60F, .80F);
-
-            //converter.ConvertImagesToAscii(imagesFolderPath, outputFolderPath, name, sixCrowSettings, default, true);
-
-            AsciiDisplay.DisplayAscii(fileIO, true);
-
-            //ShowExample();
+            Application app = new Application();
+            app.Run();
         }
-        private static BrightnessSettings MakeBrightnessSetting(float blank, float light, float medium, float dark)
-        {
-            BrightnessSettings bs = new BrightnessSettings();
-            bs.BlankThreshold = blank;
-            bs.LightThreshold = light;
-            bs.MediumThreshold = medium;
-            bs.DarkThreshold = dark;
-            return bs;
-        }
-        private static ColorMask MakeColorMask(float hueMin, float hueMax, float saturationMin, float saturationMax)
-        {
-            ColorMask cm = new ColorMask();
-            cm.HueMin = hueMin;
-            cm.HueMax = hueMax;
-            cm.SaturationMin = saturationMin;
-            cm.SaturationsMax = saturationMax;
-            return cm;
-        }
+        
     }
     public struct BrightnessSettings
     {

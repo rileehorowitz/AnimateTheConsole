@@ -23,7 +23,7 @@ namespace AnimateTheConsole.Core
 
         public static void DisplayAscii(AsciiFileIO fileIO, bool isFullScreen = false)
         {
-
+            Console.Clear();
             List<string> frames = fileIO.ReadAsciiFromFolder();
             int asciiWidth = frames[0].Split("\n")[0].Length;
             int asciiHeight = frames[0].Split("\n").Length;
@@ -36,19 +36,31 @@ namespace AnimateTheConsole.Core
                 widthBuffer = Console.LargestWindowWidth - asciiWidth;
                 heightBuffer = Console.LargestWindowHeight - asciiHeight;
             }
-            foreach (string frame in frames)
+            if (frames.Count > 2)
+            {
+                foreach (string frame in frames)
+                {
+                    Console.SetCursorPosition(0, heightBuffer / 2);
+                    foreach (string line in frame.Split("\n"))
+                    {
+                        Console.WriteLine(new string(' ', widthBuffer / 2) + line);
+                    }
+                    if (Console.KeyAvailable)
+                    {
+                        Console.ReadKey(true);
+                        Console.ReadKey(true);
+                    }
+                    Thread.Sleep(50);
+                }
+            }
+            else
             {
                 Console.SetCursorPosition(0, heightBuffer / 2);
-                foreach (string line in frame.Split("\n"))
+                foreach (string line in frames[0].Split("\n"))
                 {
                     Console.WriteLine(new string(' ', widthBuffer / 2) + line);
                 }
-                if (Console.KeyAvailable)
-                {
-                    Console.ReadKey(true);
-                    Console.ReadKey(true);
-                }
-                Thread.Sleep(50);
+                Console.ReadKey(true);
             }
             Console.Clear();
             if (isFullScreen)
@@ -103,7 +115,7 @@ namespace AnimateTheConsole.Core
             public int Right;
             public int Bottom;
         }  // Structure used by GetWindowRect
-        private static Vector2 SetTerminalFullScreen()
+        public static Vector2 SetTerminalFullScreen()
         {
             // Import the necessary functions from user32.dll
             [DllImport("user32.dll")]
