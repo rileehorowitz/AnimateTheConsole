@@ -80,7 +80,6 @@ C:\Users\envoy\workspace\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\n
 C:\Users\envoy\workspace\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\net7.0\ref\AnimateTheConsole.dll
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\net7.0\AnimateTheConsole.Properties.Resources.resources
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\net7.0\AnimateTheConsole.csproj.GenerateResource.cache
-C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\CreationOfAdam\CreationOfAdam_1\the-creation-of-adam-detail-of-the-hands-of-god-and-adam-michelangelo.jpg
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\Hades\Hades_1\ezgif-frame-001.jpg
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\Hades\Hades_1\ezgif-frame-002.jpg
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\Hades\Hades_1\ezgif-frame-003.jpg
@@ -1217,14 +1216,7 @@ C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\Animat
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\SixOfCrows\SixOfCrows_4\ezgif-frame-098.jpg
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\SixOfCrows\SixOfCrows_4\ezgif-frame-099.jpg
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\SixOfCrows\SixOfCrows_4\ezgif-frame-100.jpg
-C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\VendingMachine\VendingMachine\IMG_2980.jpg
-C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\VendingMachine\VendingMachine\IMG_2982.jpg
-C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\VendingMachine\VendingMachine\IMG_2983.jpg
-C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\VendingMachine\VendingMachine\IMG_2984.jpg
-C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\VendingMachine\VendingMachine\IMG_2985.jpg
-C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\VendingMachine\VendingMachine\IMG_2986.jpg
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\image-to-ascii-output\Coins\Coins.txt
-C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\image-to-ascii-output\CreationOfAdam\CreationOfAdam.txt
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\image-to-ascii-output\Hades\Hades.txt
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\image-to-ascii-output\SixOfCrows\SixOfCrows.txt
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\Coins\ezgif-frame-001.jpg

@@ -63,7 +63,7 @@ namespace AnimateTheConsole.FileIO
             foreach (string imageFile in imageFiles)
             {
                 images.Add(new Bitmap(imageFile));
-                AsciiDisplay.IncrementDisplayCount(FileName, imageFiles.Count);
+                AsciiDisplay.IncrementDisplayCount($"Loading {FileName} Images", imageFiles.Count);
             }
             return images;
         }

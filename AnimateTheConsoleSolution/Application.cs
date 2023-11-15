@@ -31,6 +31,7 @@ namespace AnimateTheConsole
             splitString = "|";
             Console.CursorVisible = false;
             AsciiDisplay.SetTerminalFullScreen();
+            AsciiDisplay.SetFontSize(AsciiDisplay.FontSizeDefault);
             converter = new ImageConverter(Console.WindowWidth, Console.WindowHeight, splitString);
             fileIO = new AsciiFileIO("SixOfCrows");
 
@@ -45,7 +46,7 @@ namespace AnimateTheConsole
         }
         public bool UserInterface()
         {
-            console.PrintMainMenu();
+            PrintMainMenu();
             int menuSelection = console.PromptForInteger("Please choose an option", 0, 2);
             if(menuSelection == 0)
             {
@@ -54,8 +55,9 @@ namespace AnimateTheConsole
             }
             else if(menuSelection == 1)
             {
+                
                 //Convert Images
-                if (DisplayFolderChoiceMenu(fileIO.GetImageFileNames()))
+                if (PrintFolderChoiceMenu(fileIO.GetImageFileNames()))
                 {
                     string bsKey = "Default";
                     if (bs.ContainsKey(fileIO.FileName))
@@ -63,28 +65,44 @@ namespace AnimateTheConsole
                         bsKey = fileIO.FileName;
                     }
                     converter.ConvertImagesToAscii(fileIO, bs[bsKey], default, true);
+                    console.Pause();
                 }
-                console.Pause();
             }
             else if(menuSelection == 2)
             {
                 //Display ASCII
-                if (DisplayFolderChoiceMenu(fileIO.GetAsciiFileNames()))
+                if (PrintFolderChoiceMenu(fileIO.GetAsciiFileNames()))
                 {
                     AsciiDisplay.DisplayAscii(fileIO, true);
+                    console.Pause();
                 }
-                console.Pause();
             }
             return true;
         }
 
-        public bool DisplayFolderChoiceMenu(List<string> options)
+        public void PrintMainMenu()
         {
-            for(int i = 1; i <= options.Count; i++)
+            Console.Clear();
+            Console.WriteLine("");
+            Console.WriteLine($"Hello!");
+            Console.WriteLine();
+            Console.WriteLine("1: Convert Images to ASCII");
+            Console.WriteLine("2: Display ASCII");
+            Console.WriteLine();
+            Console.WriteLine("0: Exit");
+            Console.WriteLine("---------");
+        }
+        public bool PrintFolderChoiceMenu(List<string> options)
+        {
+            Console.Clear();
+            Console.WriteLine();
+            for (int i = 1; i <= options.Count; i++)
             {
                 Console.WriteLine($"{i}: {options[i-1]}");
             }
+            Console.WriteLine();
             Console.WriteLine("0: Exit");
+            Console.WriteLine("---------");
 
             int userChoice = console.PromptForInteger("Please choose an option", 0, options.Count);
             if(userChoice == 0)

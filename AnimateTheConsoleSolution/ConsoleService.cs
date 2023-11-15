@@ -34,17 +34,6 @@ namespace AnimateTheConsole
             Console.ResetColor();
         }
 
-        public void PrintMainMenu()
-        {
-            Console.Clear();
-            Console.WriteLine("");
-            Console.WriteLine($"Hello!");
-            Console.WriteLine("1: Convert Images to ASCII");
-            Console.WriteLine("2: Display ASCII");
-            Console.WriteLine("0: Exit");
-            Console.WriteLine("---------");
-        }
-
         /************************************************************
             Prompt methods (get user input)
         ************************************************************/

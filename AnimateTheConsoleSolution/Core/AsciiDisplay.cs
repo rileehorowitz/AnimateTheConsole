@@ -16,7 +16,7 @@ namespace AnimateTheConsole.Core
     public static class AsciiDisplay
     {
         private static Vector2 screenWidthHeight;
-        private const int FontSizeDefault = 21;
+        public const int FontSizeDefault = 21;
         private static int DisplayCount { get; set; }
         private static int DisplayPlaceLimit { get; set; }
         private static string DisplayZeroes { get; set; }
@@ -32,6 +32,7 @@ namespace AnimateTheConsole.Core
             if (isFullScreen)
             {
                 screenWidthHeight = SetTerminalFullScreen();
+
                 DetermineFontSize(asciiWidth, asciiHeight);
                 widthBuffer = Console.LargestWindowWidth - asciiWidth;
                 heightBuffer = Console.LargestWindowHeight - asciiHeight;
@@ -89,6 +90,7 @@ namespace AnimateTheConsole.Core
             DisplayCount = 0;
             DisplayPlaceLimit = 10;
             DisplayZeroes = new string('0', length - 1);
+            Console.Clear();
         }
 
         public static void IncrementDisplayCount(string message, int fileCount)
@@ -177,7 +179,7 @@ namespace AnimateTheConsole.Core
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] // Edit sizeconst if the font name is too big
             public string FaceName;
         }
-        private static void SetFontSize(short fontHeight)
+        public static void SetFontSize(short fontHeight)
         {
             [DllImport("kernel32")]
             static extern IntPtr GetStdHandle(StdHandle index);

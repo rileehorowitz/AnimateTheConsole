@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,12 +14,18 @@ namespace AnimateTheConsole.Core
         public int WindowWidth { get; set; }
         public int WindowHeight { get; set; }
         public string SplitString { get; set; }
-
+        private int ConsoleMaxWidth { get; set; }
+        private int ConsoleMaxHeight { get; set; }
         public ImageConverter(int windowWidth, int windowHeight, string splitString)
         {
             WindowWidth = windowWidth;
             WindowHeight = windowHeight;
             SplitString = splitString;
+
+            AsciiDisplay.SetFontSize(2);
+                ConsoleMaxWidth = Console.LargestWindowWidth;
+                ConsoleMaxHeight = Console.LargestWindowHeight;
+            AsciiDisplay.SetFontSize(AsciiDisplay.FontSizeDefault);
         }
 
         public void ConvertImagesToAscii(AsciiFileIO fileIO, BrightnessSettings bs, ColorMask cm = new ColorMask(), bool keepBaseDimensions = false)
@@ -131,10 +138,19 @@ namespace AnimateTheConsole.Core
         }
         private string ConvertImageToAsciiFitImage(Bitmap bm, BrightnessSettings bs, ColorMask cm)
         {
-            bm = new Bitmap(bm, bm.Width / 3, bm.Height / 6);
-            WindowWidth = bm.Width / 2;
-            WindowHeight = bm.Height / 2;
-
+            
+            bm = new Bitmap(bm, bm.Width / 2, bm.Height / 4);
+            WindowWidth = (int)(bm.Width / (bm.Width / ConsoleMaxHeight+1));
+            WindowHeight = (int)(bm.Height / (bm.Width / ConsoleMaxHeight+1));
+            if(WindowWidth%2 != 0)
+            {
+                WindowWidth -= 1;
+            }
+            if(WindowHeight%2 != 0)
+            {
+                WindowHeight -= 1;
+            }
+            
             string imageText = "";
 
             //base height and width in pixels of a given pixel grid
