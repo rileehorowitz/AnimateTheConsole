@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,46 +25,63 @@ namespace AnimateTheConsole.FileIO
 
         public List<string> ReadAsciiFromFolder()
         {
-
+            
             List<string> frames = new List<string>();
-            string asciiFile = Directory.GetFiles(AsciiFolderPath)[0];
-            using (StreamReader sr = new StreamReader(asciiFile))
-            {
-                frames.AddRange(sr.ReadToEnd().Split(SplitString));
+            try {
+                string asciiFile = Directory.GetFiles(AsciiFolderPath)[0];
+                using (StreamReader sr = new StreamReader(asciiFile))
+                {
+                    frames.AddRange(sr.ReadToEnd().Split(SplitString));
+                }
             }
-
+            catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+            }
             return frames;
         }
         public void WriteAsciiToFile(string imageText)
         {
+            try { 
             if (!Directory.Exists(AsciiFolderPath))
-            {
-                Directory.CreateDirectory(AsciiFolderPath);
+                {
+                    Directory.CreateDirectory(AsciiFolderPath);
+                }
+                //store ascii frames in a text file
+                string outputFilePath = Path.Combine(AsciiFolderPath, $"{FileName}.txt");
+                using (StreamWriter sw = new StreamWriter(outputFilePath))
+                {
+                    sw.WriteLine(imageText);
+                }
             }
-            //store ascii frames in a text file
-            string outputFilePath = Path.Combine(AsciiFolderPath, $"{FileName}.txt");
-            using (StreamWriter sw = new StreamWriter(outputFilePath))
+            catch (Exception ex)
             {
-                sw.WriteLine(imageText);
+                Console.WriteLine(ex.Message);
             }
         }
         public List<Bitmap> LoadImages()
         {
             List<Bitmap> images = new List<Bitmap>();
-            string[] foldersInImagePath = Directory.GetDirectories(ImagesFolderPath);
-            List<string> imageFiles = new List<string>();
-            imageFiles.AddRange(Directory.GetFiles(ImagesFolderPath));
-            images = new List<Bitmap>();
-            for (int i = 0; i < foldersInImagePath.Length; i++)
+            try
             {
-                imageFiles.AddRange(Directory.GetFiles($"{foldersInImagePath[i]}", "*.jpg"));
+                string[] foldersInImagePath = Directory.GetDirectories(ImagesFolderPath);
+                List<string> imageFiles = new List<string>();
+                imageFiles.AddRange(Directory.GetFiles(ImagesFolderPath));
+                images = new List<Bitmap>();
+                for (int i = 0; i < foldersInImagePath.Length; i++)
+                {
+                    imageFiles.AddRange(Directory.GetFiles($"{foldersInImagePath[i]}", "*.jpg"));
+                }
+                //Load all images and display status to user
+                AsciiDisplay.ResetDisplayCount(imageFiles.Count.ToString().Length);
+                foreach (string imageFile in imageFiles)
+                {
+                    images.Add(new Bitmap(imageFile));
+                    AsciiDisplay.IncrementDisplayCount($"Loading {FileName} Images", imageFiles.Count);
+                }
             }
-            //Load all images and display status to user
-            AsciiDisplay.ResetDisplayCount(imageFiles.Count.ToString().Length);
-            foreach (string imageFile in imageFiles)
+            catch (Exception ex)
             {
-                images.Add(new Bitmap(imageFile));
-                AsciiDisplay.IncrementDisplayCount($"Loading {FileName} Images", imageFiles.Count);
+                Console.WriteLine(ex.Message);
             }
             return images;
         }

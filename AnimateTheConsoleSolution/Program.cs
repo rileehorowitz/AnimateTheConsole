@@ -53,7 +53,15 @@ namespace AnimateTheConsole
         private static void Main(string[] args)
         {
             Application app = new Application();
-            app.Run();
+            if (args.Length == 0)
+            {
+                app.UseConHost();
+            }
+            else if (args[0] == "run")
+            {
+                app.Run();
+            }
+            //app.Run();
         }
         
     }

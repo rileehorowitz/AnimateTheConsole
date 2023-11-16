@@ -1328,3 +1328,4 @@ C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\Animat
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\Coins\ezgif-frame-107.jpg
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\Coins\ezgif-frame-108.jpg
 C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\bin\Debug\net7.0\data\images\Coins\ezgif-frame-109.jpg
+C:\Users\Student\workspace\rilee-horowitz-side-projects\AnimateTheConsole\AnimateTheConsoleSolution\obj\Debug\net7.0\AnimateTheConsole.sourcelink.json

@@ -4,8 +4,10 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using AnimateTheConsole.Core;
 using AnimateTheConsole.FileIO;
+using System.Runtime.InteropServices;
 
 namespace AnimateTheConsole
 {
@@ -33,7 +35,7 @@ namespace AnimateTheConsole
             AsciiDisplay.SetTerminalFullScreen();
             AsciiDisplay.SetFontSize(AsciiDisplay.FontSizeDefault);
             converter = new ImageConverter(Console.WindowWidth, Console.WindowHeight, splitString);
-            fileIO = new AsciiFileIO("SixOfCrows");
+            fileIO = new AsciiFileIO("");
 
             ColorMask adamMask = MakeColorMask(48.0F, 360.0F, 0.0F, 0.12F);
 
@@ -43,6 +45,23 @@ namespace AnimateTheConsole
             bs.Add("Coins", MakeBrightnessSetting(.10F, .20F, .45F, .65F));
             bs.Add("Default", MakeBrightnessSetting(.20F, .40F, .60F, .80F));
 
+        }
+
+        public void UseConHost()
+        {
+            Process process = new Process();
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
+            process.StartInfo.CreateNoWindow = false;
+
+            process.StartInfo.FileName = @"conhost.exe";
+            process.StartInfo.Arguments = $"conhost.exe -- cmd.exe /c {Environment.CurrentDirectory}\\AnimateTheConsole.exe run";
+
+            process.Start();
+            process.WaitForExit();
         }
         public bool UserInterface()
         {
